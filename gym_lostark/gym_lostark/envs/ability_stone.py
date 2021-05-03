@@ -114,7 +114,7 @@ class AbilityStone(gym.Env):
             reward += 1
             reward += self._successes[0]-self._target_result[0]
             reward += self._successes[1]-self._target_result[1]
-            reward += self._target_result[2] - self._stone[2]+self._successes[2]
+            reward += self._target_result[2] -self._stone[2]-self._successes[2]
 
         elif (self._target_result[0]>self._stone[0]+self._successes[0] or
               self._target_result[1]>self._stone[1]+self._successes[1] or
