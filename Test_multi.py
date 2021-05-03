@@ -39,7 +39,7 @@ total_steps = int(args.total_steps)
 
 hp.Algorithm = 'V-MPO'
 
-hp.Batch_size = 256
+hp.Batch_size = 4
 hp.Buf.N = 32
 hp.k_train_step = 1
 hp.Q_discount = 0.95
