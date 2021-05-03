@@ -467,9 +467,9 @@ class Player():
                     online_dist_mu = tfp.distributions.MultivariateNormalTriL(
                         loc=mu, scale_tril=sig_t, name='online_dist_mu'
                     )
-                online_dist_sig = tfp.distributions.MultivariateNormalTriL(
-                    loc=mu_t, scale_tril=sig, name='online_dist_sig'
-                )
+                    online_dist_sig = tfp.distributions.MultivariateNormalTriL(
+                        loc=mu_t, scale_tril=sig, name='online_dist_sig'
+                    )
 
                 KL_mu = tfp.distributions.kl_divergence(
                     target_dist, online_dist_mu, allow_nan_stats=True,
