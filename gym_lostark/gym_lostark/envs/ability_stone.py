@@ -39,11 +39,11 @@ class AbilityStone(gym.Env):
     If target is met (buff_0, buff_1 have reached target success
                       and debuff has failed enough), reward 1 is given.
     From then, if the stone gets any better (buffs success or debuff fails)
-        reward increases by 1.
+        reward 1 is given.
     
     For example, if the target is 7/6/2 and all debuff chances are used,
     7/5/2 -> 7/6/2 : Reward 1
-    7/6/2 -> 7/6/2 : Reward 1
+    7/6/2 -> 7/6/2 : Reward 0
 
     9/5/2 -> 9/5/2 : Reward 0
     9/5/2 -> 9/6/2 : Reward 3
@@ -124,6 +124,9 @@ class AbilityStone(gym.Env):
         
         if np.all(self._stone == 0):
             self._done = True
+        
+        adjusted_reward = reward - self._max_reward
+        self._max_reward = max(self._max_reward, reward)
 
         return self._get_observation(), reward, self._done, self._successes
         
@@ -167,6 +170,7 @@ class AbilityStone(gym.Env):
         self._target_result = np.array(target_result)
         self._successes = np.zeros(3)
         self._fails = np.zeros(3)
+        self._max_reward = 0
 
         self._done = False
 
