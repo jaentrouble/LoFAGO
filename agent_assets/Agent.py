@@ -420,7 +420,7 @@ class Player():
                     if hp.Discrete:
                         logit_t = self.t_models['actor'](o, training=False)
                         target_dist = tfp.distributions.Categorical(
-                            logits=logit, name='target_dist'
+                            logits=logit_t, name='target_dist'
                         )
                     
                     else:
