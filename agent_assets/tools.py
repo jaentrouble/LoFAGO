@@ -7,6 +7,9 @@ from tqdm import tqdm
 from .Agent import Player
 import tensorflow as tf
 
+def evaluate_lostark(player, env):
+    pass
+
 def evaluate_unity(player, env, video_type):
     print('Evaluating...')
     done = False
