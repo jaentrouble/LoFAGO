@@ -3,12 +3,44 @@ from os import path, makedirs
 import numpy as np
 from .replaybuffer import ReplayBuffer
 from . import A_hparameters as hp
-from tqdm import tqdm
+from tqdm import tqdm, trange
 from .Agent import Player
 import tensorflow as tf
 
-def evaluate_lostark(player, env):
-    pass
+def evaluate_lostark(player, env, *args):
+    TOTAL_ROUNDS = 100000
+    print('Evaluating...')
+    done = False
+    if player.model_dir is None:
+        eval_dir = path.join(player.save_dir,'eval')
+        if not path.exists(eval_dir):
+            makedirs(eval_dir)
+    else:
+        eval_dir = player.model_dir
+    score_dir = path.join(eval_dir,'score.txt')
+
+    o = env.reset()
+    test_targets = [(9,7,2),(7,6,3),(6,5,4)]
+    scores = []
+    for target in test_targets:
+        score = 0
+        test_tqdm = tqdm(total=TOTAL_ROUNDS, dynamic_ncols=True, unit='rounds')
+        for rounds in range(TOTAL_ROUNDS):
+            test_tqdm.update()
+            while not done:
+                a = player.act(o)
+                o,r,done,i = env.step(a)
+                if r>0:
+                    score += 1
+                    test_tqdm.set_postfix({f'avg:{score/rounds:.2f}'})
+                    break
+        scores.append(score)
+    with open(score_dir, 'w') as f:
+        for target, score in zip(test_targets,scores):
+            f.write(str(target)+f' : {score/TOTAL_ROUNDS} \n')
+    print('Eval finished')
+    return scores
+
 
 def evaluate_unity(player, env, video_type):
     print('Evaluating...')

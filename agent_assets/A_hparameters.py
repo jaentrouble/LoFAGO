@@ -13,6 +13,7 @@ available_algorithms=(
     'A2C',
 )
 Algorithm = 'V-MPO'
+Discrete = False
 
 class Lr():
     def __init__(self):

@@ -15,6 +15,27 @@ Critic model functions should take following arguments:
     3. encoder_f
 """
 
+def actor_vmpo_dense_discrete(observation_space, action_space, encoder_f):
+    encoded_state, encoder_inputs = encoder_f(observation_space)
+    s = layers.Flatten(name='actor_flatten_state')(encoded_state)
+
+    action_num = action_space.n
+
+    x = layers.Dense(256, activation='relu',
+                     name='actor_dense1')(s)
+    x = layers.Dense(128, activation='relu',
+                     name='actor_dense2')(x)
+    x = layers.Dense(action_num, activation='linear',
+                     name='actor_dense3')(x)
+
+    model = keras.Model(
+        inputs=encoder_inputs,
+        outputs=x,
+        name='actor'
+    )
+
+    return model
+
 
 def actor_vmpo_dense(observation_space, action_space, encoder_f):
     encoded_state, encoder_inputs = encoder_f(observation_space)

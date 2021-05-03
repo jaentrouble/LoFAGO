@@ -49,6 +49,16 @@ def classic_dense_vmpo(observation_space, action_space):
 
     return actor, critic
 
+def classic_dense_vmpo_discrete(observation_space, action_space):
+    encoder_f = em.encoder_simple_dense
+
+    actor = am.actor_vmpo_dense_discrete(observation_space, action_space, encoder_f)
+
+    critic = cm.critic_v_dense(observation_space, action_space, encoder_f)
+
+    return actor, critic
+
+
 def classic_dense_ppo(observation_space, action_space):
     encoder_f = em.encoder_simple_dense
 

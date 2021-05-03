@@ -1,5 +1,5 @@
 import gym
-import gym_mouse
+import gym_lostark
 import time
 import agent_assets.agent_models as am
 from agent_assets.parallel_tools import ParallelTrainer
@@ -9,7 +9,7 @@ import argparse
 from tensorflow.profiler.experimental import Profile
 from datetime import timedelta
 
-ENVIRONMENT = 'BipedalWalkerHardcore-v3'
+ENVIRONMENT = 'AbilityStone-v0'
 
 env_kwargs = [
     dict(
@@ -19,11 +19,11 @@ env_names = [ENVIRONMENT]*len(env_kwargs)
 
 hp.CLASSIC = True
 
-model_f = am.classic_dense_vmpo
+model_f = am.classic_dense_vmpo_discrete
+hp.Discrete = True
+hp.Actor_activation = 'linear'
 
-hp.Actor_activation = 'tanh'
-
-evaluate_f = tools.evaluate_common
+evaluate_f = tools.evaluate_lostark
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--step', dest='total_steps',default=100000, type=int)

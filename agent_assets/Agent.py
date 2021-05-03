@@ -218,8 +218,13 @@ class Player():
         """
         processed_state = self.pre_processing(before_state)
         # Policy Gradient methods use old target model to collect data
-        
-        if hp.Algorithm == 'V-MPO':
+        if hp.Discrete:
+            logit = self.t_models['actor'](processed_state, training=False)
+            action_distrib = tfp.distributions.Categorical(
+                logits=logit, name='choose_action_dist'
+            )
+
+        elif hp.Algorithm == 'V-MPO':
             mu, sigma = self.t_models['actor'](processed_state, training=False)
             action_distrib = tfp.distributions.MultivariateNormalTriL(
                 loc=mu, scale_tril=sigma, name='choose_action_dist'
@@ -237,7 +242,8 @@ class Player():
             )
         
         action = action_distrib.sample()
-        action = tf.clip_by_value(action, self.action_space.low, self.action_space.high)
+        if not hp.Discrete:
+            action = tf.clip_by_value(action, self.action_space.low, self.action_space.high)
         return action
 
 
@@ -410,15 +416,28 @@ class Player():
                     # (B,)
                     adv_target = G - v_target
 
-                    mu_t, sig_t = self.t_models['actor'](o, training=False)
-                    target_dist = tfp.distributions.MultivariateNormalTriL(
-                        loc=mu_t, scale_tril=sig_t, name='target_dist'
+                    if hp.Discrete:
+                        logit_t = self.t_models['actor'](o, training=False)
+                        target_dist = tfp.distributions.Categorical(
+                            logits=logit, name='target_dist'
+                        )
+                    
+                    else:
+                        mu_t, sig_t = self.t_models['actor'](o, training=False)
+                        target_dist = tfp.distributions.MultivariateNormalTriL(
+                            loc=mu_t, scale_tril=sig_t, name='target_dist'
+                        )
+                if hp.Discrete:
+                    logit = self.models['actor'](o, training=True)
+                    online_dist = tfp.distributions.Categorical(
+                        logits=logit, name='online_dist'
                     )
 
-                mu, sig = self.models['actor'](o, training=True)
-                online_dist = tfp.distributions.MultivariateNormalTriL(
-                    loc=mu, scale_tril=sig, name='online_dist'
-                )
+                else:
+                    mu, sig = self.models['actor'](o, training=True)
+                    online_dist = tfp.distributions.MultivariateNormalTriL(
+                        loc=mu, scale_tril=sig, name='online_dist'
+                    )
                 online_logprob = online_dist.log_prob(a)
                 
                 # Top half advantages
