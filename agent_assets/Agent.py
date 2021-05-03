@@ -75,8 +75,9 @@ class Player():
             self.eta = tf.Variable(1.0, trainable=True, name='eta',dtype='float32')
             self.alpha_mu = tf.Variable(1.0, trainable=True, name='alpha_mu',
                                         dtype='float32')
-            self.alpha_sig = tf.Variable(1.0, trainable=True, name='alpha_sig',
-                                        dtype='float32')
+            if not hp.Discrete:
+                self.alpha_sig = tf.Variable(1.0, trainable=True, name='alpha_sig',
+                                            dtype='float32')
         
         elif hp.Algorithm == 'A2C':
             action_num = tf.reduce_prod(self.action_shape)
@@ -457,19 +458,21 @@ class Player():
 
                 L_ETA = self.eta*hp.VMPO_eps_eta + \
                         self.eta*tf.math.multiply_no_nan(eta_term,is_finite)
-                
-                online_dist_mu = tfp.distributions.MultivariateNormalTriL(
-                    loc=mu, scale_tril=sig_t, name='online_dist_mu'
-                )
+
+                if hp.Discrete:
+                    online_dist_mu = tfp.distributions.Categorical(
+                        logits=logit, name='online_dist'
+                    )
+                else:
+                    online_dist_mu = tfp.distributions.MultivariateNormalTriL(
+                        loc=mu, scale_tril=sig_t, name='online_dist_mu'
+                    )
                 online_dist_sig = tfp.distributions.MultivariateNormalTriL(
                     loc=mu_t, scale_tril=sig, name='online_dist_sig'
                 )
 
                 KL_mu = tfp.distributions.kl_divergence(
                     target_dist, online_dist_mu, allow_nan_stats=True,
-                )
-                KL_sig = tfp.distributions.kl_divergence(
-                    target_dist, online_dist_sig, allow_nan_stats=True,
                 )
 
                 KL_mu_safe = tf.math.multiply_no_nan(
@@ -478,23 +481,31 @@ class Player():
                         tf.math.is_finite(KL_mu), 'float32'
                     )
                 )
-                KL_sig_safe = tf.math.multiply_no_nan(
-                    KL_sig,
-                    tf.cast(
-                        tf.math.is_finite(KL_sig), 'float32'
-                    )
-                )
-
                 L_A_mu = tf.reduce_mean(
                     self.alpha_mu*(hp.VMPO_eps_alpha_mu\
                                     -tf.stop_gradient(KL_mu_safe))
                     + tf.stop_gradient(self.alpha_mu)*KL_mu_safe
                 )
-                L_A_sig = tf.reduce_mean(
-                    self.alpha_sig*(hp.VMPO_eps_alpha_sig\
-                                    -tf.stop_gradient(KL_sig_safe))
-                    + tf.stop_gradient(self.alpha_sig)*KL_sig_safe
-                )
+                if hp.Discrete:
+                    KL_sig = 0
+                    KL_sig_safe = 0
+                    L_A_sig = 0
+                else:
+                    KL_sig = tfp.distributions.kl_divergence(
+                        target_dist, online_dist_sig, allow_nan_stats=True,
+                    )
+
+                    KL_sig_safe = tf.math.multiply_no_nan(
+                        KL_sig,
+                        tf.cast(
+                            tf.math.is_finite(KL_sig), 'float32'
+                        )
+                    )
+                    L_A_sig = tf.reduce_mean(
+                        self.alpha_sig*(hp.VMPO_eps_alpha_sig\
+                                        -tf.stop_gradient(KL_sig_safe))
+                        + tf.stop_gradient(self.alpha_sig)*KL_sig_safe
+                    )
 
                 loss = L_V + L_PI + L_ETA + L_A_mu + L_A_sig
 
@@ -545,7 +556,9 @@ class Player():
         all_vars = critic_vars + actor_vars
 
         if hp.Algorithm == 'V-MPO':
-            vmpo_vars = [self.eta, self.alpha_mu, self.alpha_sig]
+            vmpo_vars = [self.eta, self.alpha_mu]
+            if not hp.Discrete:
+                vmpo_vars.append(self.alpha_sig)
             all_vars = all_vars+vmpo_vars
         elif hp.Algorithm == 'A2C':
             all_vars.append(self.log_sigma)
@@ -577,8 +590,9 @@ class Player():
                 tf.reduce_max([self.eta, hp.VMPO_eta_min]))
             self.alpha_mu.assign(
                 tf.reduce_max([self.alpha_mu, hp.VMPO_alpha_min]))
-            self.alpha_sig.assign(
-                tf.reduce_max([self.alpha_sig, hp.VMPO_alpha_min]))
+            if not hp.Discrete:
+                self.alpha_sig.assign(
+                    tf.reduce_max([self.alpha_sig, hp.VMPO_alpha_min]))
         elif hp.Algorithm == 'A2C':
             self.log_sigma.assign(
                 tf.math.log(tf.clip_by_value(tf.exp(self.log_sigma), 
@@ -596,16 +610,21 @@ class Player():
             if hp.Algorithm == 'V-MPO':
                 tf.summary.scalar('L_eta', L_ETA, self.total_steps)
                 tf.summary.scalar('L_alpha_mu', L_A_mu, self.total_steps)
-                tf.summary.scalar('L_alpha_sig', L_A_sig, self.total_steps)
+                
                 tf.summary.scalar('eta', self.eta, self.total_steps)
                 tf.summary.scalar('alpha_mu', self.alpha_mu, self.total_steps)
-                tf.summary.scalar('alpha_sig', self.alpha_sig,self.total_steps)
                 tf.summary.scalar('KL_mu', tf.reduce_mean(KL_mu), 
                                                 self.total_steps)
-                tf.summary.scalar('KL_sig', tf.reduce_mean(KL_sig), 
-                                                    self.total_steps)
+                
                 tf.summary.scalar('adv_top_half',tf.reduce_mean(adv_top_half),
                                                 self.total_steps)
+                if not hp.Discrete:
+                    tf.summary.scalar('alpha_sig', self.alpha_sig,
+                                        self.total_steps)
+                    tf.summary.scalar('KL_sig', tf.reduce_mean(KL_sig), 
+                                                    self.total_steps)
+                    tf.summary.scalar('L_alpha_sig', L_A_sig, self.total_steps)
+
             elif hp.Algorithm == 'A2C':
                 tf.summary.scalar('MaxSigma', 
                     tf.reduce_max(tf.exp(self.log_sigma)), self.total_steps)
@@ -623,21 +642,26 @@ class Player():
                     tf.linalg.global_norm(all_gradients[len(critic_vars):-3]),
                     step=self.total_steps,
                 )
+                if hp.Discrete:
+                    index_fix = 1
+                else :
+                    index_fix = 0
                 tf.summary.scalar(
                     'eta_grad',
-                    all_gradients[-3],
+                    all_gradients[-3+index_fix],
                     step=self.total_steps,
                 )
                 tf.summary.scalar(
                     'alpha_mu_grad',
-                    all_gradients[-2],
+                    all_gradients[-2+index_fix],
                     step=self.total_steps,
                 )
-                tf.summary.scalar(
-                    'alpha_sig_grad',
-                    all_gradients[-1],
-                    step=self.total_steps,
-                )
+                if not hp.Discrete:
+                    tf.summary.scalar(
+                        'alpha_sig_grad',
+                        all_gradients[-1],
+                        step=self.total_steps,
+                    )
             elif hp.Algorithm == 'PPO':
                 tf.summary.scalar(
                     'actor_grad_norm',
