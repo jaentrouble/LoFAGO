@@ -249,7 +249,10 @@ class ParallelTrainer():
                 if self._act_steps%hp.log_actions in range(self._env_n):
                     # Record the first env's action
                     with self._player.file_writer.as_default():
-                        tf.summary.scalar('a0', actions[0][0],self._act_steps)
+                        if hp.Discrete:
+                            tf.summary.scalar('a0', actions[0],self._act_steps)
+                        else:
+                            tf.summary.scalar('a0', actions[0][0],self._act_steps)
                         if not hp.CLASSIC:
                             tf.summary.scalar('a1', 
                                     actions[0][1],self._act_steps)
