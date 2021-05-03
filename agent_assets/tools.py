@@ -19,7 +19,7 @@ def evaluate_lostark(player, env, *args):
         eval_dir = player.model_dir
     score_dir = path.join(eval_dir,'score.txt')
 
-    o = env.reset()
+    
     test_targets = [(9,7,2),(7,6,3),(6,5,4)]
     scores = []
     for target in test_targets:
@@ -27,6 +27,7 @@ def evaluate_lostark(player, env, *args):
         test_tqdm = tqdm(total=TOTAL_ROUNDS, dynamic_ncols=True, unit='rounds')
         for rounds in range(TOTAL_ROUNDS):
             test_tqdm.update()
+            o = env.reset()
             while not done:
                 a = player.act(o)
                 o,r,done,i = env.step(a)
