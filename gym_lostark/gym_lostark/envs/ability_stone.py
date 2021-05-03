@@ -128,7 +128,7 @@ class AbilityStone(gym.Env):
         adjusted_reward = reward - self._max_reward
         self._max_reward = max(self._max_reward, reward)
 
-        return self._get_observation(), reward, self._done, self._successes
+        return self._get_observation(), adjusted_reward, self._done, self._successes
         
     def _carve_stone(self, action):
         if self._rng.random()<self._prob:
