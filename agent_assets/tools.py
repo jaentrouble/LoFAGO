@@ -6,9 +6,11 @@ from . import A_hparameters as hp
 from tqdm import tqdm, trange
 from .Agent import Player
 import tensorflow as tf
+import gym, gym_lostark
 
-def evaluate_lostark(player, env, *args):
+def evaluate_lostark(player, *args):
     TOTAL_ROUNDS = 100000
+    env = EnvWrapper_AbilityStone(gym.make('AbilityStone-v0'))
     print('Evaluating...')
     done = False
     if player.model_dir is None:
@@ -27,7 +29,7 @@ def evaluate_lostark(player, env, *args):
         test_tqdm = tqdm(total=TOTAL_ROUNDS, dynamic_ncols=True, unit='rounds')
         for rounds in range(TOTAL_ROUNDS):
             test_tqdm.update()
-            o = env.reset()
+            o = env.reset(target)
             while not done:
                 a = player.act(o)
                 o,r,done,i = env.step(a)
@@ -161,7 +163,7 @@ class EnvWrapper_AbilityStone():
     }
 
     **NOTE: This is for AbilityStone environment.
-            Random targets are generated when reset is called
+            Random targets are generated when reset is called without arg
     """
     def __init__(self, env):
         self.env = env
@@ -175,8 +177,11 @@ class EnvWrapper_AbilityStone():
         o, r, d, i = self.env.step(action)
         return {'obs':o}, r, d, i
 
-    def reset(self):
-        return {'obs':self.env.reset(np.random.randint([11,11,11]))}
+    def reset(self, target=None):
+        if target is None:
+            return {'obs':self.env.reset(np.random.randint([11,11,11]))}
+        else:
+            return {'obs':self.env.reset(target)}
 
     def render(self, *args, **kwargs):
         return self.env.render(*args, **kwargs)
