@@ -190,7 +190,10 @@ class ParallelTrainer():
         for e_n, e_k in zip(env_names, env_kwargs):
             env = gym.make(e_n, **e_k)
             if hp.CLASSIC:
-                env = tools.EnvWrapper(env)
+                if hp.GameType == 'AbilityStone':
+                    env = tools.EnvWrapper_AbilityStone(env)
+                else:
+                    env = tools.EnvWrapper(env)
             envs.append(env)
         self._player = Player(
             observation_space=env.observation_space,

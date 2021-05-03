@@ -14,6 +14,7 @@ available_algorithms=(
 )
 Algorithm = 'V-MPO'
 Discrete = False
+GameType = None
 
 class Lr():
     def __init__(self):

@@ -18,6 +18,7 @@ env_kwargs = [
 env_names = [ENVIRONMENT]*len(env_kwargs)
 
 hp.CLASSIC = True
+hp.GameType = 'AbilityStone'
 
 model_f = am.classic_dense_vmpo_discrete
 hp.Discrete = True
