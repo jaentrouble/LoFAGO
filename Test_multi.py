@@ -14,7 +14,7 @@ ENVIRONMENT = 'AbilityStone-v0'
 env_kwargs = [
     dict(
     ),
-] * 32
+] * 1
 env_names = [ENVIRONMENT]*len(env_kwargs)
 
 hp.CLASSIC = True
