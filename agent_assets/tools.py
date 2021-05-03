@@ -153,6 +153,35 @@ class EnvWrapper():
     def close(self):
         return self.env.close()
 
+class EnvWrapper_AbilityStone():
+    """Change normal observation into dictionary type
+    {
+        'obs' : (actual observation)
+    }
+
+    **NOTE: This is for AbilityStone environment.
+            Random targets are generated when reset is called
+    """
+    def __init__(self, env):
+        self.env = env
+        from gym import spaces
+        self.observation_space = spaces.Dict(
+            {'obs' : self.env.observation_space}
+        )
+        self.action_space = self.env.action_space
+
+    def step(self, action):
+        o, r, d, i = self.env.step(action)
+        return {'obs':o}, r, d, i
+
+    def reset(self):
+        return {'obs':self.env.reset(np.random.randint([11,11,11]))}
+
+    def render(self, *args, **kwargs):
+        return self.env.render(*args, **kwargs)
+
+    def close(self):
+        return self.env.close()
 
 
 def k_steps(reset_buffer:bool, buf:ReplayBuffer, player:Player, env,
