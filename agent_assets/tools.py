@@ -12,7 +12,7 @@ def evaluate_lostark(player, *args):
     TOTAL_ROUNDS = 100000
     env = EnvWrapper_AbilityStone(gym.make('AbilityStone-v0'))
     print('Evaluating...')
-    done = False
+    
     if player.model_dir is None:
         eval_dir = path.join(player.save_dir,'eval')
         if not path.exists(eval_dir):
@@ -30,6 +30,7 @@ def evaluate_lostark(player, *args):
         for rounds in range(TOTAL_ROUNDS):
             test_tqdm.update()
             o = env.reset(target)
+            done = False
             while not done:
                 a = player.act(o)
                 o,r,done,i = env.step(a)
