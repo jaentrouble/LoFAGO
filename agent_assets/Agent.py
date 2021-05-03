@@ -58,8 +58,9 @@ class Player():
         print('Starting from step {}'.format(start_step))
         print(f'Use mixed float? {mixed_float}')
         self.action_space = action_space
-        self.action_range = action_space.high - action_space.low
-        self.action_shape = action_space.shape
+        if not hp.Discrete:
+            self.action_range = action_space.high - action_space.low
+            self.action_shape = action_space.shape
         self.observation_space = observation_space
         self.mixed_float = mixed_float
         if mixed_float:
