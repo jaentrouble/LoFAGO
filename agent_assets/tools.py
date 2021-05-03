@@ -33,7 +33,7 @@ def evaluate_lostark(player, env, *args):
                 o,r,done,i = env.step(a)
                 if r>0:
                     score += 1
-                    test_tqdm.set_postfix({f'avg:{score/(rounds+1):.2f}'})
+                    test_tqdm.set_postfix({'avg':score/(rounds+1)})
                     break
         scores.append(score)
     with open(score_dir, 'w') as f:
