@@ -39,6 +39,7 @@ def evaluate_lostark(player, *args):
                     test_tqdm.set_postfix({'avg':score/(rounds+1)})
                     break
         scores.append(score)
+        test_tqdm.close()
     with open(score_dir, 'w') as f:
         for target, score in zip(test_targets,scores):
             f.write(str(target)+f' : {score/TOTAL_ROUNDS} \n')
