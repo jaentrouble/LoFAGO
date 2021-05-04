@@ -49,8 +49,9 @@ def act(obs):
     return tf.argmax(a_logit)
 
 
-results = []
+
 for TARGET in TARGETS:
+    results = []
     for _ in tqdm.trange(args.num):
         o = env.reset(TARGET)
         done = False

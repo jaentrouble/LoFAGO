@@ -3,7 +3,7 @@ import numpy as np
 import tqdm
 import random
 
-TRY_N = 5000000
+TRY_N = 10000
 TARGET = (0,0,10)
 
 prob_list = [0.25,0.35,0.45,0.55,0.65,0.75]
@@ -132,33 +132,43 @@ def get_p_table(na1, na2, nb, p_idx):
         [EaB, EaB, EbB],
         max(EaA, EaB)
     ]
-env = gym.make('AbilityStone-v0')
-results = []
-for _ in tqdm.trange(TRY_N):
-    o = env.reset(TARGET)
-    done = False
-    while not done:
-        na1, na2, nb, _,_,_, prob = o
-        na1 = int(na1)
-        na2 = int(na2)
-        nb = int(nb)
-        p_idx = prob_to_idx(prob)
-        p_table = get_p_table(na1, na2, nb, p_idx)
-        if (p_table[0][2]==0 and
-            p_table[2][0]==0 and
-            p_table[2][2]>0):
-            action = 2
-        elif p_table[0][2] > p_table[2][2]:
-            action = 2
-        elif (p_table[0][0] > p_table[1][0] and
-              p_table[0][1] < p_table[1][1]):
-            action = 0
-        elif (p_table[0][0] < p_table[1][0] and
-              p_table[0][1] > p_table[1][1]):
-            action = 1
-        else:
-            action = random.randint(0,1)
-        o, r, done, i = env.step(action)
-    results.append(i)
-np.savetxt(f'savefiles/dolphago/eval_{TARGET}_{TRY_N}.csv',
-            np.array(results),delimiter=',')
+
+def test_proc(proc_num):
+    env = gym.make('AbilityStone-v0')
+    results = []
+    for _ in range(TRY_N):
+        o = env.reset(TARGET)
+        done = False
+        while not done:
+            na1, na2, nb, _,_,_, prob = o
+            na1 = int(na1)
+            na2 = int(na2)
+            nb = int(nb)
+            p_idx = prob_to_idx(prob)
+            p_table = get_p_table(na1, na2, nb, p_idx)
+            if (p_table[0][2]==0 and
+                p_table[2][0]==0 and
+                p_table[2][2]>0):
+                action = 2
+            elif p_table[0][2] > p_table[2][2]:
+                action = 2
+            elif (p_table[0][0] > p_table[1][0] and
+                p_table[0][1] < p_table[1][1]):
+                action = 0
+            elif (p_table[0][0] < p_table[1][0] and
+                p_table[0][1] > p_table[1][1]):
+                action = 1
+            else:
+                action = random.randint(0,1)
+            o, r, done, i = env.step(action)
+        results.append(i)
+    print(proc_num,' done')
+    return results
+
+if __name__ == '__main__':
+    from multiprocessing import Pool, Queue
+    MULTIPLIER = 1000
+    with Pool(processes=12) as pool:
+        results_list = pool.map(test_proc, range(MULTIPLIER))
+    np.savetxt(f'savefiles/dolphago/eval_{TARGET}_{TRY_N}x{MULTIPLIER}.csv',
+                np.concatenate(results_list),delimiter=',')
