@@ -13,14 +13,8 @@ for gpu in gpus:
 
 TARGETS = (
     (9,7,2),
-    (9,7,4),
-    (9,7,9),
-    (8,6,2),
-    (8,6,4),
-    (7,6,2),
-    (7,6,4),
 )
-ENV_BATCH = 32
+ENV_BATCH = 256
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-n',help='Number of eval steps',type=int, dest='num')
