@@ -77,7 +77,7 @@ class AbilityStone(gym.Env):
         self.observation_space = spaces.Box(
             low=np.array([0.0]*6 + [MIN_PROB]),
             high=np.array([self._default_chance]*6+[MAX_PROB]),
-            dtype=np.float32
+            dtype=np.float
         )
 
         self._done = False
