@@ -168,7 +168,7 @@ def test_proc(Q, TRY_N):
 if __name__ == '__main__':
     from multiprocessing import Process, Queue
     MAX_PROCS = 12
-    MULTIPLIER = 10
+    MULTIPLIER = 1000
     TRY_N = 10000
     result_Q = Queue()
     proc_tqdm = tqdm.tqdm(total=MULTIPLIER)
