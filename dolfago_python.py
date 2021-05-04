@@ -3,7 +3,7 @@ import numpy as np
 import tqdm
 import random
 
-TRY_N = 10000
+
 TARGET = (0,0,10)
 
 prob_list = [0.25,0.35,0.45,0.55,0.65,0.75]
@@ -133,7 +133,7 @@ def get_p_table(na1, na2, nb, p_idx):
         max(EaA, EaB)
     ]
 
-def test_proc(proc_num):
+def test_proc(Q, TRY_N):
     env = gym.make('AbilityStone-v0')
     results = []
     for _ in range(TRY_N):
@@ -162,13 +162,29 @@ def test_proc(proc_num):
                 action = random.randint(0,1)
             o, r, done, i = env.step(action)
         results.append(i)
-    print(proc_num,' done')
-    return results
+    Q.put(results)
+
 
 if __name__ == '__main__':
-    from multiprocessing import Pool, Queue
-    MULTIPLIER = 1000
-    with Pool(processes=12) as pool:
-        results_list = pool.map(test_proc, range(MULTIPLIER))
+    from multiprocessing import Process, Queue
+    MAX_PROCS = 12
+    MULTIPLIER = 10
+    TRY_N = 10000
+    result_Q = Queue()
+    proc_tqdm = tqdm.tqdm(total=MULTIPLIER)
+    for _ in range(min(MULTIPLIER,MAX_PROCS)):
+        Process(target=test_proc, args=(result_Q, TRY_N)).start()
+    results_list = []
+    done_proc = 0
+    while done_proc<MULTIPLIER:
+        if not result_Q.empty():
+            results_list.extend(result_Q.get())
+            done_proc+= 1
+            proc_tqdm.update()
+            left_over = MULTIPLIER-done_proc-MAX_PROCS
+            if left_over>=0:
+                Process(target=test_proc, args=(result_Q, TRY_N)).start()
+
+
     np.savetxt(f'savefiles/dolphago/eval_{TARGET}_{TRY_N}x{MULTIPLIER}.csv',
-                np.concatenate(results_list),delimiter=',')
+                np.array(results_list),delimiter=',')
