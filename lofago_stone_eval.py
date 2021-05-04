@@ -7,7 +7,7 @@ import tqdm
 import numpy as np
 import tensorflow as tf
 
-TARGET = (0,0,0)
+TARGET = (0,0,10)
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-n',help='Number of eval steps',type=int, dest='num')
@@ -47,4 +47,4 @@ for _ in tqdm.trange(args.num):
         o, r, done, i = env.step(a)
     results.append(i)
 np.savetxt(str(save_dir/f'eval_{TARGET}_{args.num}.csv'),
-            np.array(results,dtype=np.int),delimiter=',')
+            np.array(results),delimiter=',')

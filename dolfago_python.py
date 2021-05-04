@@ -4,7 +4,7 @@ import tqdm
 import random
 
 TRY_N = 100000
-TARGET = (7,6,4)
+TARGET = (0,0,10)
 
 prob_list = [0.25,0.35,0.45,0.55,0.65,0.75]
 
@@ -133,7 +133,7 @@ def get_p_table(na1, na2, nb, p_idx):
         max(EaA, EaB)
     ]
 env = gym.make('AbilityStone-v0')
-success = 0
+results = []
 for _ in tqdm.trange(TRY_N):
     o = env.reset(TARGET)
     done = False
@@ -159,8 +159,6 @@ for _ in tqdm.trange(TRY_N):
         else:
             action = random.randint(0,1)
         o, r, done, i = env.step(action)
-        if r>0:
-            success += 1
-            break
-print(success)
-print(success/TRY_N)
+    results.append(i)
+np.savetxt(f'savefiles/dolphago/eval_{TARGET}_{TRY_N}.csv',
+            np.array(results),delimiter=',')
