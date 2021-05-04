@@ -20,45 +20,61 @@ TARGETS = (
     (7,6,2),
     (7,6,4),
 )
+ENV_BATCH = 32
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-n',help='Number of eval steps',type=int, dest='num')
 parser.add_argument('-l','--load',help='model directory', dest='load')
 args = parser.parse_args()
 
-env = gym.make('AbilityStone-v0')
-env = tools.EnvWrapper_AbilityStone(env)
+envs = []
+for _ in range(ENV_BATCH):
+    env = gym.make('AbilityStone-v0')
+    envs.append(env)
 
 model_f = am.classic_dense_vmpo_discrete
 
-actor, critic = model_f(env.observation_space, env.action_space)
+actor, critic = model_f({'obs':env.observation_space}, env.action_space)
 save_dir = Path(args.load)
 actor.load_weights(str(save_dir/'actor'))
 
-obs_range = (env.observation_space['obs'].high-
-             env.observation_space['obs'].low)
-obs_middle = (env.observation_space['obs'].high+
-              env.observation_space['obs'].low)/2
+obs_range = (env.observation_space.high-
+             env.observation_space.low)
+obs_middle = (env.observation_space.high+
+              env.observation_space.low)/2
 
 def pre_processing(obs):
-    return (2*(obs['obs']-obs_middle)/obs_range)[np.newaxis,...]
+    return (2*(obs-obs_middle)/obs_range)
 
 @tf.function
 def act(obs):
-    a_logit = actor(pre_processing(obs))[0]
-    return tf.argmax(a_logit)
+    a_logit = actor(pre_processing(obs))
+    return tf.argmax(a_logit,axis=-1)
 
 
 
 for TARGET in TARGETS:
+    print(TARGET)
+    count_t = tqdm.tqdm(total=args.num, dynamic_ncols=True)
     results = []
-    for _ in tqdm.trange(args.num):
-        o = env.reset(TARGET)
-        done = False
-        while not done:
-            a_tf = act(o)
-            a = a_tf.numpy()
+    done_count = 0
+    o_list = []
+    for env in envs:
+        o_list.append(env.reset(TARGET))
+    while done_count<args.num:
+        o_batch = np.array(o_list)
+        a_tf = act(o_batch)
+        a = a_tf.numpy()
+
+        o_list = []
+        for env, a in zip(envs, a):
             o, r, done, i = env.step(a)
-        results.append(i)
+            if done or r>0:
+                results.append(i)
+                o = env.reset(TARGET)
+                done_count += 1
+                count_t.update()
+            o_list.append(o)
     np.savetxt(str(save_dir/f'eval_{TARGET}_{args.num}.csv'),
                 np.array(results),delimiter=',')
+    count_t.close()
