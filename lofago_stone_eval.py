@@ -7,7 +7,15 @@ import tqdm
 import numpy as np
 import tensorflow as tf
 
-TARGET = (0,0,10)
+TARGETS = (
+    (9,7,2),
+    (9,7,4),
+    (9,7,9),
+    (8,6,2),
+    (8,6,4)
+    (7,6,2),
+    (7,6,4),
+)
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-n',help='Number of eval steps',type=int, dest='num')
@@ -33,18 +41,19 @@ def pre_processing(obs):
 
 @tf.function
 def act(obs):
-    a_logit = actor(pre_processing(o))[0]
+    a_logit = actor(pre_processing(obs))[0]
     return tf.argmax(a_logit)
 
 
 results = []
-for _ in tqdm.trange(args.num):
-    o = env.reset(TARGET)
-    done = False
-    while not done:
-        a_tf = act(o)
-        a = a_tf.numpy()
-        o, r, done, i = env.step(a)
-    results.append(i)
-np.savetxt(str(save_dir/f'eval_{TARGET}_{args.num}.csv'),
-            np.array(results),delimiter=',')
+for TARGET in TARGETS:
+    for _ in tqdm.trange(args.num):
+        o = env.reset(TARGET)
+        done = False
+        while not done:
+            a_tf = act(o)
+            a = a_tf.numpy()
+            o, r, done, i = env.step(a)
+        results.append(i)
+    np.savetxt(str(save_dir/f'eval_{TARGET}_{args.num}.csv'),
+                np.array(results),delimiter=',')

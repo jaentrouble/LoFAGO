@@ -3,7 +3,7 @@ import numpy as np
 import tqdm
 import random
 
-TRY_N = 100000
+TRY_N = 5000000
 TARGET = (0,0,10)
 
 prob_list = [0.25,0.35,0.45,0.55,0.65,0.75]
