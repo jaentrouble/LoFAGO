@@ -12,15 +12,22 @@ for gpu in gpus:
     tf.config.experimental.set_memory_growth(gpu,True)
 
 TARGETS = (
-    (9,7,2),
-    (9,7,4),
-    (9,7,9),
-    (8,6,2),
-    (8,6,4),
-    (7,6,2),
-    (7,6,4),
-    (6,5,2),
-    (6,5,4)
+    (10,6,2),
+    (10,6,4),
+    (9,8,2),
+    (9,8,4),
+    (9,6,2),
+    (9,6,4),
+    (9,5,2),
+    (9,5,4),
+    (8,8,2),
+    (8,8,4),
+    (8,7,2),
+    (8,7,4),
+    (7,7,2),
+    (7,7,4),
+    (6,6,4),
+    (6,6,2)
 )
 ENV_BATCH = 1024
 
@@ -54,9 +61,9 @@ def act(obs):
     return tf.argmax(a_logit,axis=-1)
 
 
-
-for TARGET in TARGETS:
-    print(TARGET)
+target_tqdm =tqdm.tqdm(TARGETS)
+for TARGET in target_tqdm:
+    target_tqdm.set_description(str(TARGET))
     count_t = tqdm.tqdm(total=args.num, dynamic_ncols=True)
     results = []
     done_count = 0
