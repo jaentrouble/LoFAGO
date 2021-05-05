@@ -402,8 +402,14 @@ class Console():
             target_left, 0
         )
         tf_input = np.float32(np.concatenate(
-            (chance_left, target_left, [self.prob])
+            (chance_left, target_left, [self.prob/100])
         ))[np.newaxis,...]
+        # Normalize inputs
+        high = np.array([10,10,10,10,10,10,1],dtype=np.float32)
+        low = np.array([0,0,0,0,0,0,0],dtype=np.float32)
+        obs_range = high-low
+        obs_middle = (high+low)/2
+        tf_input = 2*(tf_input-obs_middle)/obs_range
         self.interpreter.set_tensor(self.input_idx,tf_input)
         self.interpreter.invoke()
         logits = self.interpreter.get_tensor(self.output_idx)[0].astype(np.float64)
