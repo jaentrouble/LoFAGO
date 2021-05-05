@@ -413,9 +413,7 @@ class Console():
         self.interpreter.set_tensor(self.input_idx,tf_input)
         self.interpreter.invoke()
         logits = self.interpreter.get_tensor(self.output_idx)[0].astype(np.float64)
-        print(logits)
         probs = np.exp(logits)/np.sum(np.exp(logits))
-        print(target_left)
         if chance_left[0] == 0:
             probs[1] += probs[0]
             probs[0] = 0
