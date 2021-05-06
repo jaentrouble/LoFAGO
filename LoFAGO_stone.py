@@ -2,7 +2,15 @@ import tflite_runtime.interpreter as tflite
 import tkinter as tk
 from tkinter import ttk
 from functools import partial
+from pathlib import Path
 import numpy as np
+import sys
+
+rel_path = 'tflite_models/stone_1_7.tflite'
+if getattr(sys,'frozen',False) and hasattr(sys,'_MEIPASS'):
+    bundle_dir = Path(sys._MEIPASS)
+else:
+    bundle_dir = ''
 
 EMPTY = "◇"
 SUCC = "◆"
@@ -10,7 +18,7 @@ FAIL = "✕"
 MAX_PROB = 75
 MIN_PROB = 25
 DEFAULT_TARGET = [7,6,2]
-MODEL_PATH = 'tflite_models/stone_1_7.tflite'
+MODEL_PATH = str(Path.cwd()/bundle_dir/rel_path)
 
 class Console():
     def __init__(self):
