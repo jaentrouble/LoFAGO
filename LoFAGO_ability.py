@@ -401,6 +401,16 @@ class Console():
         target_left = np.maximum(
             target_left, 0
         )
+        # If a2 > a1, flip (for consistency)
+        # Although the model is learned regardless of the order
+        # Results sometimes do not seem consistent
+        # ex) 7/6/2 does not match 6/7/2
+        if self.target[0]<self.target[1]:
+            flip = True
+            chance_left = [chance_left[1],chance_left[0],chance_left[2]]
+            target_left = [target_left[1],target_left[0],target_left[2]]
+        else:
+            flip = False
         tf_input = np.float32(np.concatenate(
             (chance_left, target_left, [self.prob/100])
         ))[np.newaxis,...]
@@ -432,6 +442,10 @@ class Console():
                 probs[1] += probs[2]
             probs[2] = 0
 
+        # Revert flipping
+        if flip:
+            probs = [probs[1],probs[0],probs[2]]
+            
         prob_str_vars = [
             self.pred_a1_string_var,
             self.pred_a2_string_var,
