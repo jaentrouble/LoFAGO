@@ -423,8 +423,8 @@ class Console():
             (chance_left, target_left, [self.prob/100])
         ))[np.newaxis,...]
         # Normalize inputs
-        high = np.array([10,10,10,10,10,10,1],dtype=np.float32)
-        low = np.array([0,0,0,0,0,0,0],dtype=np.float32)
+        high = np.array([10,10,10,10,10,10,MAX_PROB/100],dtype=np.float32)
+        low = np.array([0,0,0,0,0,0,MIN_PROB/100],dtype=np.float32)
         obs_range = high-low
         obs_middle = (high+low)/2
         tf_input = 2*(tf_input-obs_middle)/obs_range
