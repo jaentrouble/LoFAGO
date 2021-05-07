@@ -20,6 +20,13 @@ MIN_PROB = 25
 DEFAULT_TARGET = [7,6,2]
 MODEL_PATH = 'tflite_models/stone_1_7.tflite'
 
+prob_info_list = [
+    '\n다른걸 눌러도\n목표 달성할 가능성이\n충분히 있긴 하지만\n어쨌든 이게 가능성이 높다',
+    '\n통계상 추천합니다만\n역배 ㄱ?',
+    '\n누르는 것을 추천합니다.',
+    '\n이 선택이 반드시\n목표를 달성할 수 있다는\n뜻이 아니다.\n\n다른 선택지들이\n너무 답이 없을 뿐.',
+]
+
 class Console():
     def __init__(self):
         self.prepare_tflite()
@@ -54,7 +61,8 @@ class Console():
         self.pred_a2_string_var = tk.StringVar(value='--%')
         self.pred_b_string_var = tk.StringVar(value='--%')
 
-        # self.font_prob = 
+        self.explanation_string_var = tk.StringVar(value='')
+
         self.label_prob = ttk.Label(self.mainframe,
                             textvariable=self.prob_string_var,
                             padding='5 5 5 5',
@@ -257,6 +265,13 @@ class Console():
                 )
             )
             self.button_target_b_list[-1].grid(column=2, row=i+1)
+
+        self.label_explanation = ttk.Label(
+            self.mainframe,
+            textvariable=self.explanation_string_var,
+            font=13
+        )
+        self.label_explanation.grid(column=3, row=5, columnspan=3)
         
         self.update()
 
@@ -459,8 +474,17 @@ class Console():
             self.pred_a2_string_var,
             self.pred_b_string_var
         ]
-        for sv, prob in zip(prob_str_vars, probs):
-            sv.set(f'{prob*100:.2f}%')
+        recommand = np.argmax(probs)
+        for i in range(3):
+            if i == recommand:
+                prob_str_vars[i].set(f'{probs[i]*100:.2f}% (추천)')
+            else:
+                prob_str_vars[i].set(f'{probs[i]*100:.2f}%')
+        
+        prob_max = np.max(probs)
+        exp_str = f'{prob_max*100:.2f}%\n' + prob_info_list[int((prob_max-0.3)/0.2)]
+        self.explanation_string_var.set(exp_str)
+        
 
 
 
