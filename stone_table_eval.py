@@ -62,7 +62,7 @@ if __name__ == '__main__':
             for t3 in range(1,6):
                 target = [t1,t2,t3]
                 target_tqdm.set_description(str(target))
-                proc_tqdm = tqdm.tqdm(total=min(MULTIPLIER,MAX_PROCS))
+                proc_tqdm = tqdm.tqdm(total=MULTIPLIER)
                 for _ in range(min(MULTIPLIER,MAX_PROCS)):
                     Process(target=test_proc, args=(result_Q, TRY_N, target,table)).start()
                 results_list = []
