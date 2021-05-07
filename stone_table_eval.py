@@ -2,7 +2,7 @@ import gym, gym_lostark
 from multiprocessing import Process, Queue
 import tqdm
 import numpy as np
-table = np.load('exp_table.npz')['table']
+
 def prob_to_idx(prob):
     return int((prob-0.25)/0.1)
 
@@ -12,7 +12,7 @@ def p_fail(p_idx):
 def p_succ(p_idx):
     return max(0,p_idx-1)
 
-def test_proc(Q, TRY_N,target):
+def test_proc(Q, TRY_N,target, table):
     env = gym.make('AbilityStone-v0')
     results = []
     for _ in range(TRY_N):
@@ -53,6 +53,7 @@ if __name__ == '__main__':
     MAX_PROCS = 36
     MULTIPLIER = 1000
     TRY_N = 10000
+    table = np.load('exp_table.npz')['table']
     result_Q = Queue()
     target_tqdm = tqdm.tqdm(total=195)
     
@@ -63,7 +64,7 @@ if __name__ == '__main__':
                 target_tqdm.set_description(str(target))
                 proc_tqdm = tqdm.tqdm(total=min(MULTIPLIER,MAX_PROCS))
                 for _ in range(min(MULTIPLIER,MAX_PROCS)):
-                    Process(target=test_proc, args=(result_Q, TRY_N, target)).start()
+                    Process(target=test_proc, args=(result_Q, TRY_N, target,table)).start()
                 results_list = []
                 done_proc = 0
                 while done_proc<MULTIPLIER:
@@ -73,7 +74,7 @@ if __name__ == '__main__':
                         proc_tqdm.update()
                         left_over = MULTIPLIER-done_proc-MAX_PROCS
                         if left_over>=0:
-                            Process(target=test_proc, args=(result_Q, TRY_N)).start()
+                            Process(target=test_proc, args=(result_Q, TRY_N, target, table)).start()
                 proc_tqdm.close()
                 target_tqdm.update()
                 np.savetxt(f'savefiles/stone_table/eval_{target}_{TRY_N}x{MULTIPLIER}.csv',
