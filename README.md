@@ -7,7 +7,8 @@ LostArk Helper programs
 - 따라서 딥러닝을 통한 근사해를 구한 것이 아니라 최적화된 해를 구한 방식이라 이론상 가장 목표 각인에 도달할 확률이 높습니다.
 
 ## 사용법
-![info](https://user-images.githubusercontent.com/45917844/117487351-efa58980-afa5-11eb-8b6f-85bd1b567358.png)
+![info](https://user-images.githubusercontent.com/45917844/117487706-63e02d00-afa6-11eb-9d4a-aa7559c2b47b.png)
+
 
 
 ## Reference
