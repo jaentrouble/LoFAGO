@@ -55,11 +55,14 @@ if __name__ == '__main__':
     TRY_N = 10000
     table = np.load('exp_table.npz')['table']
     result_Q = Queue()
-    proc_tqdm = tqdm.tqdm(total=MULTIPLIER)
+    target_tqdm = tqdm.tqdm(total=195)
+    
     for t1 in range(5,11):
         for t2 in range(1,t1+1):
             for t3 in range(1,6):
                 target = [t1,t2,t3]
+                target_tqdm.set_description(str(target))
+                proc_tqdm = tqdm.tqdm(total=min(MULTIPLIER,MAX_PROCS))
                 for _ in range(min(MULTIPLIER,MAX_PROCS)):
                     Process(target=test_proc, args=(result_Q, TRY_N, target,table)).start()
                 results_list = []
@@ -72,7 +75,7 @@ if __name__ == '__main__':
                         left_over = MULTIPLIER-done_proc-MAX_PROCS
                         if left_over>=0:
                             Process(target=test_proc, args=(result_Q, TRY_N)).start()
-
-
+                proc_tqdm.close()
+                target_tqdm.update()
                 np.savetxt(f'savefiles/stone_table/eval_{target}_{TRY_N}x{MULTIPLIER}.csv',
                             np.array(results_list),delimiter=',')
