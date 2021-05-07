@@ -14,7 +14,7 @@ def check_reward(c1,c2,c3,t1,t2,t3, successed, idx):
     """
     if idx == 1 :
         if successed:
-            if t1-1<=0 and t2==0 and c3<=t3:
+            if t1-1<=0 and t2<=0 and c3<=t3:
                 return 1
             else:
                 return 0
@@ -25,7 +25,7 @@ def check_reward(c1,c2,c3,t1,t2,t3, successed, idx):
                 return 0
     elif idx == 2:
         if successed:
-            if t2-1<=0 and t1==0 and c3 <= t3:
+            if t2-1<=0 and t1<=0 and c3 <= t3:
                 return 1
             else:
                 return 0
@@ -41,7 +41,7 @@ def check_reward(c1,c2,c3,t1,t2,t3, successed, idx):
             else:
                 return 0
         else:
-            if c3-1<=t3:
+            if t1<=0 and t2<=0 and c3-1<=t3:
                 return 1
             else:
                 return 0
@@ -60,22 +60,28 @@ def calculate_exp(c1, c2, c3, t1, t2, t3, p_idx):
         return e_table[c1,c2,c3,t1,t2,t3,p_idx]
     e_list = []
     if c1 > 0:
-        e1= p_list[p_idx]*(calculate_exp(max(c1-1,0),c2,c3,max(t1-1,0),t2,t3,prob_success(p_idx)) + \
-                            check_reward(c1,c2,c3,t1,t2,t3,True,1)) +\
-            (1-p_list[p_idx])*(calculate_exp(max(c1-1,0),c2,c3,t1,t2,t3,prob_fail(p_idx)) +\
-                                check_reward(c1,c2,c3,t1,t2,t3,False,1))
+        e1_sr = check_reward(c1,c2,c3,t1,t2,t3,True,1)
+        e1_fr = check_reward(c1,c2,c3,t1,t2,t3,False,1)
+        e1= p_list[p_idx]*((e1_sr>=0)*calculate_exp(max(c1-1,0),c2,c3,max(t1-1,0),t2,t3,prob_success(p_idx)) + \
+                            e1_sr) +\
+            (1-p_list[p_idx])*((e1_fr>=0)*calculate_exp(max(c1-1,0),c2,c3,t1,t2,t3,prob_fail(p_idx)) +\
+                               e1_fr)
         e_list.append(e1)
     if c2 > 0:
-        e2= p_list[p_idx]*(calculate_exp(c1,max(c2-1,0),c3,t1,max(t2-1,0),t3,prob_success(p_idx)) + \
-                            check_reward(c1,c2,c3,t1,t2,t3,True,2)) +\
-            (1-p_list[p_idx])*(calculate_exp(c1,max(c2-1,0),c3,t1,t2,t3,prob_fail(p_idx)) +\
-                                check_reward(c1,c2,c3,t1,t2,t3,False,2))
+        e2_sr = check_reward(c1,c2,c3,t1,t2,t3,True,2)
+        e2_fr = check_reward(c1,c2,c3,t1,t2,t3,False,2)
+        e2= p_list[p_idx]*((e2_sr>=0)*calculate_exp(c1,max(c2-1,0),c3,t1,max(t2-1,0),t3,prob_success(p_idx)) + \
+                            e2_sr) +\
+            (1-p_list[p_idx])*((e2_fr>=0)*calculate_exp(c1,max(c2-1,0),c3,t1,t2,t3,prob_fail(p_idx)) +\
+                               e2_fr)
         e_list.append(e2)
     if c3 > 0:
-        e3= p_list[p_idx]*(calculate_exp(c1,c2,max(c3-1,0),t1,t2,max(t3-1,0),prob_success(p_idx)) + \
-                            check_reward(c1,c2,c3,t1,t2,t3,True,3)) +\
-            (1-p_list[p_idx])*(calculate_exp(c1,c2,max(c3-1,0),t1,t2,t3,prob_fail(p_idx)) +\
-                                check_reward(c1,c2,c3,t1,t2,t3,False,3))
+        e3_sr = check_reward(c1,c2,c3,t1,t2,t3,True,3)
+        e3_fr = check_reward(c1,c2,c3,t1,t2,t3,False,3)
+        e3= p_list[p_idx]*((e3_sr>=0)*calculate_exp(c1,c2,max(c3-1,0),t1,t2,max(t3-1,0),prob_success(p_idx)) + \
+                           e3_sr) +\
+            (1-p_list[p_idx])*((e3_fr>=0)*calculate_exp(c1,c2,max(c3-1,0),t1,t2,t3,prob_fail(p_idx)) +\
+                               e3_fr)
         e_list.append(e3)
 
     e_max = np.max(e_list)
