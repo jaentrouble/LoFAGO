@@ -30,6 +30,8 @@ class Console():
         self.root.rowconfigure(0, weight=1)
         self.root.resizable(False,False)
 
+        self.button_right = True
+
         self.default_target = DEFAULT_TARGET
         self.reset(initial=True)
 
@@ -65,13 +67,14 @@ class Console():
             self.mainframe,
             text='칸 수: '
         )
-        self.label_chance.grid(column=1, row=0)
+        self.label_chance.grid(column=1, row=0,sticky=[tk.E])
         self.combo_chance = ttk.Combobox(
             self.mainframe,
             values=[
                 10,9,8,7,6
             ],
-            state='readonly'
+            state='readonly',
+            width=10,
         )
         self.combo_chance.current(0)
         self.combo_chance.grid(column=2, row=0)
@@ -185,14 +188,16 @@ class Console():
             font=(None,14,'bold')
         )
         self.label_target_title.grid(
-            column=0, columnspan=2,row=4
+            column=0, row=4
         )
         self.label_target_target = ttk.Label(
             self.mainframe,
             textvariable=self.target_string_var,
             font=(None,14,'bold')
         )
-        self.label_target_target.grid(column=2, row=4)
+        self.label_target_target.grid(
+            column=1, row=4,columnspan=2
+        )
 
         self.button_save = ttk.Button(
             self.mainframe,
@@ -206,6 +211,13 @@ class Console():
             font=12
         )
         self.label_save.grid(column=4, row=4)
+
+        self.button_flip = ttk.Button(
+            self.mainframe,
+            text='좌우 바꾸기',
+            command=self.flip_button_callback
+        )
+        self.button_flip.grid(column=5, row=4)
 
         self.frame_target = ttk.Frame(self.mainframe)
         self.frame_target.grid(column=0, columnspan=3, row=5, sticky=tk.NSEW)
@@ -325,6 +337,74 @@ class Console():
         if len(self.click_history)>0:
             self.click_history.pop()
             self.update()
+
+    def flip_button_callback(self):
+        col_0 = [
+            self.label_prob,
+            self.label_a1,
+            self.label_a2,
+            self.label_b,
+        ]
+        col_1 = [
+            self.label_chance,
+        ]
+        col_2 = [
+            self.combo_chance,
+        ]
+        col_3 = [
+            self.button_cancel,
+            self.button_a1_s,
+            self.button_a2_s,
+            self.button_b_s,
+        ]
+        col_4 = [
+            self.button_reset,
+            self.button_a1_f,
+            self.button_a2_f,
+            self.button_b_f,
+        ]
+        col_5 = [
+            self.label_pred_title,
+            self.label_pred_a1,
+            self.label_pred_a2,
+            self.label_pred_b,
+        ]
+        if self.button_right:
+            for c0 in col_0:
+                c0.grid(column=3)
+            for c1 in col_1:
+                c1.grid(column=4)
+            for c2 in col_2:
+                c2.grid(column=5)
+            for c3 in col_3:
+                c3.grid(column=0)
+            for c4 in col_4:
+                c4.grid(column=1)
+            for c5 in col_5:
+                c5.grid(column=2)
+            self.button_save.grid(column=4)
+            self.label_save.grid(column=5)
+            self.button_flip.grid(column=6)
+            self.label_target_target.grid(columnspan=3)
+        else:
+            for c0 in col_0:
+                c0.grid(column=0)
+            for c1 in col_1:
+                c1.grid(column=1)
+            for c2 in col_2:
+                c2.grid(column=2)
+            for c3 in col_3:
+                c3.grid(column=3)
+            for c4 in col_4:
+                c4.grid(column=4)
+            for c5 in col_5:
+                c5.grid(column=5)
+            self.button_save.grid(column=3)
+            self.label_save.grid(column=4)
+            self.button_flip.grid(column=5)
+            self.label_target_target.grid(columnspan=2)
+        self.button_right = not self.button_right
+
 
     def reset(self, initial=False):
         if initial:

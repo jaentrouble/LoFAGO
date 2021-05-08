@@ -118,9 +118,9 @@ def get_q(c1, c2, c3, t1, t2, t3, p_idx):
 if __name__ == '__main__':
     
     from tqdm import trange
-    for t1 in trange(10,leave=False):
-        for t2 in trange(10,leave=False):
-            for t3 in trange(10,leave=False):
-                _ = get_q(10,10,10,t1+1,t2+1,t3+1,5)
+    for t1 in trange(11,leave=False):
+        for t2 in trange(11,leave=False):
+            for t3 in trange(11,leave=False):
+                _ = get_q(10,10,10,t1,t2,t3,5)
 
     np.savez('exp_table.npz',table=q_table)
