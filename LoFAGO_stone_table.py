@@ -238,7 +238,7 @@ class Console():
         self.label_target_b_title.grid(column=2, row=0, padx=10)
 
         self.button_target_a1_list = []
-        for i in range(10):
+        for i in range(11):
             self.button_target_a1_list.append(
                 ttk.Button(
                     self.frame_target,
@@ -250,7 +250,7 @@ class Console():
 
 
         self.button_target_a2_list = []
-        for i in range(10):
+        for i in range(11):
             self.button_target_a2_list.append(
                 ttk.Button(
                     self.frame_target,
@@ -261,7 +261,7 @@ class Console():
             self.button_target_a2_list[-1].grid(column=1, row=i+1, padx=10)
 
         self.button_target_b_list = []
-        for i in range(10):
+        for i in range(11):
             self.button_target_b_list.append(
                 ttk.Button(
                     self.frame_target,
@@ -522,14 +522,14 @@ class Console():
         ]
         recommand = np.argmax(probs)
         for i in range(3):
-            if i == recommand:
-                prob_str_vars[i].set(f'{probs[i]*100:.2f}% (추천)')
+            if probs[i] == probs[recommand]:
+                prob_str_vars[i].set(f'{probs[i]*100:.5f}% (추천)')
             else:
-                prob_str_vars[i].set(f'{probs[i]*100:.2f}%')
+                prob_str_vars[i].set(f'{probs[i]*100:.5f}%')
 
 
     def run(self):
-        dirname = filedialog.askopenfilename(filetypes=[('넘파이 압축 파일(.npz)','*.npz')])
+        dirname = filedialog.askopenfilename(filetypes=[('넘파이 압축 파일','*.npz')])
         try:
             self.table = np.load(dirname)['table']
         except (IOError, ValueError):
