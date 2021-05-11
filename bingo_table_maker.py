@@ -81,6 +81,7 @@ def fill_table(initial_table):
     state_stack = [(initial_table,0)]
     stack_tqdm = tqdm.tqdm(total=1)
     max_stack = 1
+    loop_n = 0
     while len(state_stack)>0:
         current_table, step = state_stack[-1]
         current_index = np.concatenate((current_table.reshape(-1),[step%3]))
@@ -173,7 +174,8 @@ def fill_table(initial_table):
             max_stack = len(state_stack)
             stack_tqdm.total = max_stack
         stack_tqdm.n = len(state_stack)
-        stack_tqdm.set_description(f'stack: {len(state_stack)}')
+        loop_n += 1
+        stack_tqdm.set_description(f'loop: {loop_n}')
         stack_tqdm.update(n=0)
     stack_tqdm.close()
 
