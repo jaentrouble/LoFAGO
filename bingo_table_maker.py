@@ -7,7 +7,8 @@ q_table = np.zeros([2]*25+[3,5])
 q_filled = np.zeros([2]*25+[3], dtype=np.bool)
 MAX_STEPS = 18
 EMPTY_BOARD = np.zeros((5,5), dtype=np.bool)
-B_POINT = np.array([1,4,3,2,0])
+B_POINT = np.array([1,4,3,2,0,5])
+DIAG_IDX = 5
 B_N_PENALTY = 5
 KUKU = np.array([1,1])
 
@@ -31,9 +32,9 @@ def bingo_point(before_bingo_idx, next_bingo_idx):
 
     """
     point = 0
-    if len(before_bingo_idx)<5:
+    if len(before_bingo_idx)<6:
         new_bingos = []
-        left_bingos = list(range(5))
+        left_bingos = list(range(6))
         for bb in before_bingo_idx:
             left_bingos.remove(bb)
         for nb in next_bingo_idx:
@@ -52,8 +53,22 @@ def count_bingo(table):
 
 def check_bingo(table):
     x_bingo = np.logical_and.reduce(table, axis=1)
+    x_bingo_idx = np.nonzero(x_bingo)[0]
+    if (table[0,0] and
+        table[1,1] and
+        table[2,2] and
+        table[3,3] and
+        table[4,4]):
+        x_bingo_idx = np.append(x_bingo_idx, DIAG_IDX)
     y_bingo = np.logical_and.reduce(table, axis=0)
-    return np.nonzero(x_bingo)[0], np.nonzero(y_bingo)[0]
+    y_bingo_idx = np.nonzero(y_bingo)[0]
+    if (table[0,4] and
+        table[1,3] and
+        table[2,2] and
+        table[3,1] and
+        table[4,0]):
+        y_bingo_idx = np.append(y_bingo_idx, DIAG_IDX)
+    return x_bingo_idx, y_bingo_idx
 
 def bomb_explode(table, bomb_pos):
     """
@@ -61,19 +76,36 @@ def bomb_explode(table, bomb_pos):
     """
     next_table = table.copy()
     x, y = bomb_pos
-    x_bingo, y_bingo = check_bingo(next_table)
-    if not (y in y_bingo):
-        if x-1>=0 and not((x-1) in x_bingo):
-            next_table[x-1,y] = not next_table[x-1,y]
-        if x+1<5 and not ((x+1) in x_bingo):
-            next_table[x+1,y] = not next_table[x+1,y]
-    if not (x in x_bingo):
-        if y-1>=0 and not((y-1) in y_bingo):
-            next_table[x,y-1] = not next_table[x,y-1]
-        if y+1<5 and not ((y+1) in y_bingo):
-            next_table[x,y+1] = not next_table[x,y+1]
-    if not (x in x_bingo) and not (y in y_bingo):
-        next_table[x,y] = not next_table[x,y]
+    x_bingo, y_bingo = check_bingo(table)
+    if x>0:
+        next_table[x-1,y] = not next_table[x-1,y]
+    if x<4:
+        next_table[x+1,y] = not next_table[x+1,y]
+    if y>0:
+        next_table[x,y-1] = not next_table[x,y-1]
+    if y<4:
+        next_table[x,y+1] = not next_table[x,y+1]
+    next_table[x,y] = not next_table[x,y]
+    # Fix bingo
+    for x_idx in x_bingo:
+        if x_idx!=DIAG_IDX:
+            next_table[x_idx,:] = True
+        else:
+            next_table[0,0] = True
+            next_table[1,1] = True
+            next_table[2,2] = True
+            next_table[3,3] = True
+            next_table[4,4] = True
+    for y_idx in y_bingo:
+        if y_idx!=DIAG_IDX:
+            next_table[:,y_idx] = True
+        else:
+            next_table[0,4] = True
+            next_table[1,3] = True
+            next_table[2,2] = True
+            next_table[3,1] = True
+            next_table[4,0] = True
+
     return next_table
 
 
@@ -181,11 +213,16 @@ def fill_table(initial_table):
 
 if __name__ == '__main__':
     initial_table = np.array([
-        [0,0,0,0,0],
+        [1,1,0,0,0],
         [0,1,0,0,0],
-        [0,0,0,0,0],
+        [0,0,1,0,0],
         [0,0,0,0,0],
         [0,0,0,1,0]
     ])
     fill_table(initial_table)
     np.savez_compressed('1143_table.npz',table=initial_table)
+    # test=bomb_explode(initial_table, [3,1])
+    # test=bomb_explode(test,[3,4])
+    # test=bomb_explode(test,[0,0])
+    # print(test)
+    # print(check_bingo(test))
