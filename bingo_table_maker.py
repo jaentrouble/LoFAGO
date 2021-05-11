@@ -182,3 +182,4 @@ if __name__ == '__main__':
         [0,0,0,1,0]
     ])
     fill_table(initial_table)
+    np.savez_compressed('1143_table.npz',table=initial_table)
