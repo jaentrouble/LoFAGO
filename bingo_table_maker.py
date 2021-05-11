@@ -220,7 +220,7 @@ if __name__ == '__main__':
         [0,0,0,1,0]
     ])
     fill_table(initial_table)
-    np.savez_compressed('1143_table.npz',table=initial_table)
+    np.savez_compressed('1143_table.npz',table=q_table)
     # test=bomb_explode(initial_table, [3,1])
     # test=bomb_explode(test,[3,4])
     # test=bomb_explode(test,[0,0])
