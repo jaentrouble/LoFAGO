@@ -5,6 +5,10 @@ q_filled = np.zeros([2]*25+[3,25], dtype=np.bool)
 MAX_STEPS = 18
 EMPTY_BOARD = np.zeros((5,5), dtype=np.bool)
 
+def count_bingo(table):
+    x, y = check_bingo(table)
+    return len(x) + len(y)
+
 def check_bingo(table):
     x_bingo = np.logical_and.reduce(table, axis=1)
     y_bingo = np.logical_and.reduce(table, axis=0)
@@ -20,7 +24,7 @@ def bomb_explode(table, bomb_pos):
     if not (y in y_bingo):
         if x-1>=0 and not((x-1) in x_bingo):
             next_table[x-1,y] = not next_table[x-1,y]
-        if x+1 < 5 and not ((x+1) in x_bingo):
+        if x+1<5 and not ((x+1) in x_bingo):
             next_table[x+1,y] = not next_table[x+1,y]
     if not (x in x_bingo):
         if y-1>=0 and not((y-1) in y_bingo):
@@ -32,6 +36,15 @@ def bomb_explode(table, bomb_pos):
     return next_table
 
 
-
 def fill_table(initial_table):
     state_stack = [(initial_table,0)]
+    while len(state_stack)>0:
+        current_table, step = state_stack[-1]
+        possible_choices = []
+        need_to_fill = False
+        for action_x in range(5):
+            for action_y in range(5):
+                next_table = bomb_explode(current_table, (action_x,action_y))
+                before_bingo = count_bingo(current_table)
+                next_bingo = count_bingo(next_table)
+                
