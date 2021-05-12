@@ -217,18 +217,17 @@ def fill_table(initial_table):
     stack_tqdm.close()
 
 if __name__ == '__main__':
-    test_list = [
-        [1,1,4,3],
-        [0,0,0,1],
-        [0,0,0,2]
-    ]
-    for tt in test_list:
-        print(tt)
-        x1, y1, x2, y2 = tt
-        initial_table = np.zeros((5,5),dtype=np.bool)
-        initial_table[x1,y1] = True
-        initial_table[x2,y2] = True
-        fill_table(initial_table)
+    for p1 in range(24):
+        for p2 in range(p1+1,25):
+            x1 = p1//5
+            y1 = p1%5
+            x2 = p2//5
+            y2 = p2%5
+            print([x1,y1,x2,y2])
+            initial_table = np.zeros((5,5),dtype=np.bool)
+            initial_table[x1,y1] = True
+            initial_table[x2,y2] = True
+            fill_table(initial_table)
     np.savez_compressed('bingo_tables/bingo_table.npz',table=q_table)
     # test=bomb_explode(initial_table, [3,1])
     # test=bomb_explode(test,[3,4])

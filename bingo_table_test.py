@@ -1,6 +1,6 @@
 import numpy as np
 from bingo_table_maker import *
-table = np.load('bingo_tables/1143_table.npz')['table']
+table = np.load('bingo_tables/3_table.npz')['table']
 
 def pretty_print_table(table):
     new_table = np.where(table, '⬤','◯')
