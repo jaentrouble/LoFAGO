@@ -11,6 +11,7 @@ B_POINT = np.array([1,4,3,2,0,5])
 DIAG_IDX = 5
 B_N_PENALTY = 5
 KUKU = np.array([1,1])
+WEAK_LIMIT = 6
 
 def skull_point(table):
     point = 0
@@ -174,12 +175,14 @@ def fill_table(initial_table):
             # All checked
             best_choices = []
             max_weak = 0
+            # over weak_limit is treated the same
             for pc in possible_choices:
-                if max_weak<pc[2]:
+                if max_weak<pc[2] and max_weak<WEAK_LIMIT:
                     best_choices = []
                     best_choices.append(pc)
-                    max_weak = pc[2]
-                elif max_weak==pc[2]:
+                    max_weak = min(pc[2],WEAK_LIMIT)
+                elif (max_weak==pc[2] or 
+                    (max_weak==WEAK_LIMIT and pc[2]>=max_weak)):
                     best_choices.append(pc)
             min_bingo_p = best_choices[0][3]
             best_choices_2 = []
