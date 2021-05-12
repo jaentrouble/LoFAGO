@@ -223,6 +223,14 @@ if __name__ == '__main__':
     np.savez_compressed('1143_table.npz',table=q_table)
     # test=bomb_explode(initial_table, [3,1])
     # test=bomb_explode(test,[3,4])
+    # print(test)
+    # print('skull p :',skull_point(test))
+    # x_bin, y_bin = check_bingo(test)
     # test=bomb_explode(test,[0,0])
     # print(test)
-    # print(check_bingo(test))
+    # print('skull p :',skull_point(test))
+    # x_bin2, y_bin2 = check_bingo(test)
+
+    # print('x bingo p:',bingo_point(x_bin, x_bin2))
+    # print('y bingo p:',bingo_point(y_bin, y_bin2))
+
