@@ -223,6 +223,7 @@ if __name__ == '__main__':
         [0,0,0,2]
     ]
     for tt in test_list:
+        print(tt)
         x1, y1, x2, y2 = tt
         initial_table = np.zeros((5,5),dtype=np.bool)
         initial_table[x1,y1] = True
