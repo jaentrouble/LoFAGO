@@ -130,8 +130,7 @@ def fill_table(initial_table):
                 assert next_bingo>=before_bingo, 'Bingo number decreased!'
                 
                 new_bingo = next_bingo - before_bingo
-                next_index = np.concatenate((next_table.reshape(-1),
-                                             [(step+1)%3]))
+                next_index = np.append(next_table.reshape(-1),(step+1)%3)
                 next_index = tuple(next_index)
                 if (step%3 == 2) and new_bingo == 0:
                     # Game over
@@ -179,6 +178,7 @@ def fill_table(initial_table):
                 if max_weak<pc[2]:
                     best_choices = []
                     best_choices.append(pc)
+                    max_weak = pc[2]
                 elif max_weak==pc[2]:
                     best_choices.append(pc)
             min_bingo_p = best_choices[0][3]
@@ -187,6 +187,7 @@ def fill_table(initial_table):
                 if min_bingo_p>bc[3]:
                     best_choices_2=[]
                     best_choices_2.append(bc)
+                    min_bingo_p = bc[3]
                 elif min_bingo_p == bc[3]:
                     best_choices_2.append(bc)
             min_skull_p = best_choices_2[0][4]
@@ -195,6 +196,7 @@ def fill_table(initial_table):
                 if min_skull_p>bc2[4]:
                     best_choices_3=[]
                     best_choices_3.append(bc2)
+                    min_skull_p = bc2[4]
                 elif min_skull_p==bc2[4]:
                     best_choices_3.append(bc2)
 
