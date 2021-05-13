@@ -217,6 +217,9 @@ def fill_table(initial_table):
     stack_tqdm.close()
 
 if __name__ == '__main__':
+    from time import time
+    import datetime
+    st = time()
     for p1 in range(24):
         for p2 in range(p1+1,25):
             x1 = p1//5
@@ -228,6 +231,7 @@ if __name__ == '__main__':
             initial_table[x1,y1] = True
             initial_table[x2,y2] = True
             fill_table(initial_table)
+            print(str(datetime.timedelta(seconds=time()-st)))
     np.savez_compressed('bingo_tables/bingo_table.npz',
                         table=q_table, filled=q_filled)
     # test=bomb_explode(initial_table, [3,1])
