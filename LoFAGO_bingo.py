@@ -124,7 +124,7 @@ class Console():
         
 
     def update(self):
-        self.bingo_board = np.zeros((5,5),dtype=np.bool)
+        self.bingo_board = np.zeros((5,5),dtype=bool)
         self.future_img1 = ImageTk.PhotoImage(Image.fromarray(
                     np.zeros((MIDDLE,MIDDLE,3),np.uint8)))
         self.future_img2 = ImageTk.PhotoImage(Image.fromarray(
@@ -159,7 +159,7 @@ class Console():
         self.warning_variable.set('')
         self.weak_variable.set('')
 
-        table_idx = np.append(self.bingo_board.reshape(-1).astype(np.int),
+        table_idx = np.append(self.bingo_board.reshape(-1).astype(int),
                               self.step%3)
         table_idx = tuple(table_idx)
         if self.table_filled[table_idx]:
@@ -172,7 +172,7 @@ class Console():
                 
             else:
                 next_board = bomb_explode(self.bingo_board,rec_pos)
-                next_idx = np.append(next_board.reshape(-1).astype(np.int),
+                next_idx = np.append(next_board.reshape(-1).astype(int),
                                 (self.step+1)%3)
                 next_idx = tuple(next_idx)
                 next_x, next_y, next_w, _, _ = self.table[next_idx]
@@ -182,7 +182,7 @@ class Console():
                 ))
                 if next_w>0:
                     next_board = bomb_explode(next_board, next_pos)
-                    next_idx = np.append(next_board.reshape(-1).astype(np.int),
+                    next_idx = np.append(next_board.reshape(-1).astype(int),
                                 (self.step+2)%3)
                     next_idx = tuple(next_idx)
                     next_x, next_y, _,_,_ = self.table[next_idx]
