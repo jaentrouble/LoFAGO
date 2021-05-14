@@ -234,8 +234,9 @@ class Console():
         self.reset()
 
     def button_cancel_callback(self):
-        self.click_history.pop()
-        self.update()
+        if len(self.click_history)>0:
+            self.click_history.pop()
+            self.update()
 
         
     def run(self):
