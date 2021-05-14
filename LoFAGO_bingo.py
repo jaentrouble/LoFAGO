@@ -5,7 +5,7 @@ from PIL import ImageTk, Image
 from bingo_artist import *
 from functools import partial
 from tkinter import filedialog, messagebox
-from bingo_table_maker import count_bingo, bomb_explode
+from bingo_table_maker import bomb_explode
 
 MODE_FLIP = 0
 MODE_INIT = 1
@@ -24,7 +24,7 @@ class Console():
     def __init__(self) -> None:
         self.root = tk.Tk()
         self.root.title('KukuBingo')
-        self.root.geometry('1400x700+100+100')
+        self.root.geometry('1300x700')
         self.root.resizable(False,False)
 
         self.bingo_artist = BingoArtist()
