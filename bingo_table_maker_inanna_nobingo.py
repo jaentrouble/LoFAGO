@@ -260,7 +260,7 @@ if __name__ == '__main__':
             initial_table[x2,y2] = True
             fill_table(initial_table)
             print(str(datetime.timedelta(seconds=time()-st)))
-    np.savez_compressed('bingo_tables/bingo_table_inanna.npz',
+    np.savez_compressed('bingo_tables/bingo_table_inanna_nobingo.npz',
                         table=q_table, filled=q_filled)
     # test=bomb_explode(initial_table, [3,1])
     # test=bomb_explode(test,[3,4])
