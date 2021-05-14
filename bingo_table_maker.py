@@ -1,5 +1,4 @@
 import numpy as np
-import tqdm
 
 # x, y, Max 무력, Bingo 점수, 해골 위치 점수
 # Bingo 점수, 해골 점수: Lower is better
@@ -111,6 +110,7 @@ def bomb_explode(table, bomb_pos):
 
 
 def fill_table(initial_table):
+    import tqdm
     state_stack = [(initial_table,0)]
     stack_tqdm = tqdm.tqdm(total=1)
     max_stack = 1
