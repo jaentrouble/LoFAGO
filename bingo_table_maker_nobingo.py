@@ -1,8 +1,8 @@
 import numpy as np
 
-# x, y, Max 무력, Bingo 점수, 해골 위치 점수
+# x, y, Max 무력, Bingo 점수, 해골 위치 점수, bingo 내부 여부
 # Bingo 점수, 해골 점수: Lower is better
-q_table = np.zeros([2]*25+[3,5])
+q_table = np.zeros([2]*25+[3,6])
 q_filled = np.zeros([2]*25+[3], dtype=np.bool)
 MAX_STEPS = 18
 EMPTY_BOARD = np.zeros((5,5), dtype=np.bool)
@@ -149,9 +149,9 @@ def fill_table(initial_table):
         for action_x in range(5):
             for action_y in range(5):
                 if is_in_bingo(current_table, action_x, action_y):
-                    recommandable = False
+                    recommandable = 0
                 else:
-                    recommandable = True
+                    recommandable = 1
                 next_table = bomb_explode(current_table, (action_x,action_y))
                 before_bingo = count_bingo(current_table)
                 before_bingo_x, before_bingo_y = check_bingo(current_table)
@@ -169,36 +169,37 @@ def fill_table(initial_table):
                         action_y,
                         0,
                         0,
-                        0
+                        0,
+                        recommandable,
                     ])
                 elif q_filled[next_index]:
                     if (step%3==2) and new_bingo>0:
                         # 무력 성공
-                        if recommandable:
-                            possible_choices.append([
-                                action_x,
-                                action_y,
-                                q_table[next_index][2]+1,
-                                q_table[next_index][3]\
-                                    +bingo_point(before_bingo_x, next_bingo_x)\
-                                    +bingo_point(before_bingo_y, next_bingo_y)\
-                                    +B_N_PENALTY*(new_bingo-1),
-                                q_table[next_index][4]+skull_point(next_table)
-                            ])
+                        possible_choices.append([
+                            action_x,
+                            action_y,
+                            q_table[next_index][2]+1,
+                            q_table[next_index][3]\
+                                +bingo_point(before_bingo_x, next_bingo_x)\
+                                +bingo_point(before_bingo_y, next_bingo_y)\
+                                +B_N_PENALTY*(new_bingo-1),
+                            q_table[next_index][4]+skull_point(next_table),
+                            recommandable,
+                        ])
                     else:
                         # No need to weak kuku,
                         # Unnecessary bingo
-                        if recommandable:
-                            possible_choices.append([
-                                action_x,
-                                action_y,
-                                q_table[next_index][2],
-                                q_table[next_index][3]\
-                                    +bingo_point(before_bingo_x, next_bingo_x)\
-                                    +bingo_point(before_bingo_y, next_bingo_y)\
-                                    +B_N_PENALTY*new_bingo,
-                                q_table[next_index][4]+skull_point(next_table)
-                            ])
+                        possible_choices.append([
+                            action_x,
+                            action_y,
+                            q_table[next_index][2],
+                            q_table[next_index][3]\
+                                +bingo_point(before_bingo_x, next_bingo_x)\
+                                +bingo_point(before_bingo_y, next_bingo_y)\
+                                +B_N_PENALTY*new_bingo,
+                            q_table[next_index][4]+skull_point(next_table),
+                            recommandable,
+                        ])
                 else:
                     state_stack.append((next_table, step+1))
                     need_to_fill = True
@@ -206,6 +207,13 @@ def fill_table(initial_table):
             # All checked
             best_choices = []
             max_weak = 0
+            # if there's any recommandable, that is the primary selection
+            recommandable_choices = []
+            for pc in possible_choices:
+                if pc[5]==1:
+                    recommandable_choices.append(pc)
+            if len(recommandable_choices)>0:
+                possible_choices = recommandable_choices
             # over weak_limit is treated the same
             for pc in possible_choices:
                 if max_weak<pc[2] and max_weak<WEAK_LIMIT:
