@@ -6,35 +6,40 @@ FLIPPED = 1
 BINGOED = 2
 RECOMMAND = 3
 
+SIZE = 640
+MIDDLE = int(SIZE/2)
+SPACE = int(SIZE/10)
+MARK_RAD = 40
+
 BLACK=(0,0,0)
 RED = (255,0,0)
 GREEN = (0,255,0)
 BLUE = (0,0,255)
 
 
-class BingoBoard():
+class BingoArtist():
     def __init__(self) -> None:
         self.reset_board()
 
 
     def reset_board(self):
-        board = np.ones((400,400,3),dtype=np.uint8)*255
+        board = np.ones((SIZE,SIZE,3),dtype=np.uint8)*255
         for i in range(6):
             board = cv2.line(board,
-                            (0+40*i,200+40*i),
-                            (200+40*i,0+40*i),
+                            (0+SPACE*i,MIDDLE+SPACE*i),
+                            (MIDDLE+SPACE*i,0+SPACE*i),
                             color=BLACK,
                             thickness=4)
         for i in range(6):
             board = cv2.line(board,
-                            (200-40*i,0+40*i),
-                            (400-40*i,200+40*i),
+                            (MIDDLE-SPACE*i,0+SPACE*i),
+                            (SIZE-SPACE*i,MIDDLE+SPACE*i),
                             color=BLACK,
                             thickness=4)
         self.board_img = board
         self.board = np.zeros((5,5),dtype=np.int)
 
-    def draw_board(self, board, recommand=None):
+    def draw_board(self, board, recommand=None, small=False):
         """draw_board
         update the board and get board image
 
@@ -65,27 +70,31 @@ class BingoBoard():
         
         flip_idx = self.board_idx_to_img_idx(*np.nonzero(self.board==FLIPPED))
         for x,y in zip(*flip_idx):
-            self.board_img = cv2.circle(self.board_img,(x,y),20,BLACK,-1)
+            self.board_img = cv2.circle(self.board_img,(x,y),MARK_RAD,BLACK,-1)
 
         bingoed_idx = self.board_idx_to_img_idx(
                                 *np.nonzero(self.board==BINGOED))
         for x,y in zip(*bingoed_idx):
-            self.board_img = cv2.circle(self.board_img,(x,y),20,RED,-1)
+            self.board_img = cv2.circle(self.board_img,(x,y),MARK_RAD,RED,-1)
         
         if recommand is not None:
             rec_idx = self.board_idx_to_img_idx(*recommand)
-            self.board_img = cv2.circle(self.board_img, rec_idx, 20, BLUE, -1)
+            self.board_img = cv2.circle(self.board_img, rec_idx, MARK_RAD, BLUE, -1)
 
-        return self.board_img.copy()
+        if small:
+            return cv2.resize(self.board_img, dsize=(0,0),fx=0.5, fy=0.5)
+        else:
+            return self.board_img.copy()
 
     def board_idx_to_img_idx(self, x_indices, y_indices):
-        return 200-40*x_indices+40*y_indices, 40+40*x_indices+40*y_indices
+        return (MIDDLE-SPACE*x_indices+SPACE*y_indices, 
+                SPACE+SPACE*x_indices+SPACE*y_indices)
         
 
 if __name__ == '__main__':
     
     import matplotlib.pyplot as plt
-    board = BingoBoard()
+    board = BingoArtist()
     test_board = np.array([
         [0,1,1,1,0],
         [0,0,0,1,0],
