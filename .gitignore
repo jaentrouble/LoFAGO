@@ -5,6 +5,11 @@
 *.bin
 savefiles/
 
+# venvs
+env/
+distenv/
+bingoenv/
+
 # log files
 log/
 logs/
