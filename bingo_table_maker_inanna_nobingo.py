@@ -190,18 +190,17 @@ def fill_table(initial_table):
                     else:
                         # No need to weak kuku,
                         # Unnecessary bingo
-                        if recommandable:
-                            possible_choices.append([
-                                action_x,
-                                action_y,
-                                q_table[next_index][2],
-                                q_table[next_index][3]\
-                                    +bingo_point(before_bingo_x, next_bingo_x)\
-                                    +bingo_point(before_bingo_y, next_bingo_y)\
-                                    +B_N_PENALTY*new_bingo,
-                                q_table[next_index][4]+skull_point(next_table),
-                                recommandable,
-                            ])
+                        possible_choices.append([
+                            action_x,
+                            action_y,
+                            q_table[next_index][2],
+                            q_table[next_index][3]\
+                                +bingo_point(before_bingo_x, next_bingo_x)\
+                                +bingo_point(before_bingo_y, next_bingo_y)\
+                                +B_N_PENALTY*new_bingo,
+                            q_table[next_index][4]+skull_point(next_table),
+                            recommandable,
+                        ])
                 else:
                     state_stack.append((next_table, step+1))
                     need_to_fill = True
