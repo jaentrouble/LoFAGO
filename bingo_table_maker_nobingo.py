@@ -162,8 +162,7 @@ def fill_table(initial_table):
                 new_bingo = next_bingo - before_bingo
                 next_index = np.append(next_table.reshape(-1),(step+1)%3)
                 next_index = tuple(next_index)
-                # Ignore step == 2 : Inanna version
-                if (step%3 == 2) and new_bingo == 0 and (step>2):
+                if (step%3 == 2) and new_bingo == 0:
                     # Game over
                     if recommandable:
                         possible_choices.append([
@@ -174,7 +173,7 @@ def fill_table(initial_table):
                             0
                         ])
                 elif q_filled[next_index]:
-                    if (step%3==2) and new_bingo>0 and (step>2):
+                    if (step%3==2) and new_bingo>0:
                         # 무력 성공
                         if recommandable:
                             possible_choices.append([
