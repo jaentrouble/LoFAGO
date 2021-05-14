@@ -164,14 +164,13 @@ def fill_table(initial_table):
                 next_index = tuple(next_index)
                 if (step%3 == 2) and new_bingo == 0:
                     # Game over
-                    if recommandable:
-                        possible_choices.append([
-                            action_x,
-                            action_y,
-                            0,
-                            0,
-                            0
-                        ])
+                    possible_choices.append([
+                        action_x,
+                        action_y,
+                        0,
+                        0,
+                        0
+                    ])
                 elif q_filled[next_index]:
                     if (step%3==2) and new_bingo>0:
                         # 무력 성공

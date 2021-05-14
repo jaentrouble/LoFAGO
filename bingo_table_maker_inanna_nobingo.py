@@ -165,14 +165,13 @@ def fill_table(initial_table):
                 # Ignore step == 2 : Inanna version
                 if (step%3 == 2) and new_bingo == 0 and (step>2):
                     # Game over
-                    if recommandable:
-                        possible_choices.append([
-                            action_x,
-                            action_y,
-                            0,
-                            0,
-                            0
-                        ])
+                    possible_choices.append([
+                        action_x,
+                        action_y,
+                        0,
+                        0,
+                        0
+                    ])
                 elif q_filled[next_index]:
                     if (step%3==2) and new_bingo>0 and (step>2):
                         # 무력 성공
