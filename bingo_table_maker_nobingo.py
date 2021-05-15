@@ -207,15 +207,15 @@ def fill_table(initial_table):
             # All checked
             best_choices = []
             max_weak = 0
+            # over weak_limit is treated the same
+            current_weak_limit = max(0,WEAK_LIMIT-(step//3))
             # if there's any recommandable, that is the primary selection
             recommandable_choices = []
             for pc in possible_choices:
-                if pc[5]==1:
+                if pc[5]==1 and pc[2]>=current_weak_limit:
                     recommandable_choices.append(pc)
             if len(recommandable_choices)>0:
                 possible_choices = recommandable_choices
-            # over weak_limit is treated the same
-            current_weak_limit = max(0,WEAK_LIMIT-(step//3))
             for pc in possible_choices:
                 if max_weak<pc[2] and max_weak<current_weak_limit:
                     best_choices = []
