@@ -215,13 +215,14 @@ def fill_table(initial_table):
             if len(recommandable_choices)>0:
                 possible_choices = recommandable_choices
             # over weak_limit is treated the same
+            current_weak_limit = max(0,WEAK_LIMIT-(step//3))
             for pc in possible_choices:
-                if max_weak<pc[2] and max_weak<WEAK_LIMIT:
+                if max_weak<pc[2] and max_weak<current_weak_limit:
                     best_choices = []
                     best_choices.append(pc)
-                    max_weak = min(pc[2],WEAK_LIMIT)
+                    max_weak = min(pc[2],current_weak_limit)
                 elif (max_weak==pc[2] or 
-                    (max_weak==WEAK_LIMIT and pc[2]>=max_weak)):
+                    (max_weak==current_weak_limit and pc[2]>=max_weak)):
                     best_choices.append(pc)
             min_bingo_p = best_choices[0][3]
             best_choices_2 = []

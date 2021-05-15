@@ -163,7 +163,10 @@ class Console():
                               self.step%3)
         table_idx = tuple(table_idx)
         if self.table_filled[table_idx]:
-            rec_x, rec_y, max_w, _, _ = self.table[table_idx]
+            result = self.table[table_idx]
+            rec_x = result[0]
+            rec_y = result[1]
+            max_w = result[2]
             rec_pos = (int(rec_x),int(rec_y))
             self.weak_variable.set(f'앞으로 {int(max_w)}무력 가능')
             if max_w ==0:
@@ -175,7 +178,10 @@ class Console():
                 next_idx = np.append(next_board.reshape(-1).astype(int),
                                 (self.step+1)%3)
                 next_idx = tuple(next_idx)
-                next_x, next_y, next_w, _, _ = self.table[next_idx]
+                result = self.table[next_idx]
+                next_x = result[0]
+                next_y = result[1]
+                next_w = result[2]
                 next_pos = (int(next_x),int(next_y))
                 self.future_img1 = ImageTk.PhotoImage(Image.fromarray(
                     self.bingo_artist.draw_board(next_board,next_pos,small=True)
@@ -185,7 +191,9 @@ class Console():
                     next_idx = np.append(next_board.reshape(-1).astype(int),
                                 (self.step+2)%3)
                     next_idx = tuple(next_idx)
-                    next_x, next_y, _,_,_ = self.table[next_idx]
+                    result = self.table[next_idx]
+                    next_x = result[0]
+                    next_y = result[1]
                     next_pos = (int(next_x),int(next_y))
                     self.future_img2 = ImageTk.PhotoImage(Image.fromarray(
                         self.bingo_artist.draw_board(next_board,next_pos,small=True)
