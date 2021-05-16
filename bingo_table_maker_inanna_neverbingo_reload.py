@@ -191,7 +191,7 @@ def fill_table(initial_table):
                         0,
                         recommandable,
                     ])
-                elif q_filled[next_index]:
+                elif q_filled[next_index] and step<3:
                     if (step%3==2) and new_bingo>0 and (step>2):
                         # 무력 성공
                         possible_choices.append([
