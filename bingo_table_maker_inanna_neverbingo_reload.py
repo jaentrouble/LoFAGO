@@ -151,6 +151,7 @@ def fill_table(initial_table):
     stack_tqdm = tqdm.tqdm(total=1)
     max_stack = 1
     loop_n = 0
+    global checked_count
     
     
     while len(state_stack)>0:
