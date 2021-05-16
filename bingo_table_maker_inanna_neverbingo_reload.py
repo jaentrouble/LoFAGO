@@ -148,6 +148,7 @@ def fill_table(initial_table):
     stack_tqdm = tqdm.tqdm(total=1)
     max_stack = 1
     loop_n = 0
+    checked = []
     while len(state_stack)>0:
         current_table, step = state_stack[-1]
         if step!=2:
@@ -157,7 +158,16 @@ def fill_table(initial_table):
             step_idx = 3
         current_index = np.concatenate((current_table.reshape(-1),[step_idx]))
         current_index = tuple(current_index)
+        before_bingo = count_bingo(current_table)
+        before_bingo_x, before_bingo_y = check_bingo(current_table)
         
+        if before_bingo == 0:
+            if not (current_index in checked):
+                need_to_check = True
+                checked.append(current_index)
+                q_filled[current_index] = False
+        
+                
         possible_choices = []
         need_to_fill = False
         for action_x in range(5):
@@ -167,8 +177,6 @@ def fill_table(initial_table):
                 else:
                     recommandable = 1
                 next_table = bomb_explode(current_table, (action_x,action_y))
-                before_bingo = count_bingo(current_table)
-                before_bingo_x, before_bingo_y = check_bingo(current_table)
                 next_bingo = count_bingo(next_table)
                 next_bingo_x, next_bingo_y = check_bingo(next_table)
                 assert next_bingo>=before_bingo, 'Bingo number decreased!'
@@ -191,7 +199,7 @@ def fill_table(initial_table):
                         0,
                         recommandable,
                     ])
-                elif q_filled[next_index] and step<3:
+                elif q_filled[next_index]:
                     if (step%3==2) and new_bingo>0 and (step>2):
                         # 무력 성공
                         possible_choices.append([
