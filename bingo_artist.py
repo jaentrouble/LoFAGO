@@ -9,7 +9,9 @@ RECOMMAND = 3
 SIZE = 640
 MIDDLE = int(SIZE/2)
 SPACE = int(SIZE/10)
-MARK_RAD = 40
+SKULL_RAD = 43
+SKULL_THIC = 5
+RECOM_RAD = 30
 
 BLACK=(0,0,0)
 RED = (255,0,0)
@@ -70,16 +72,19 @@ class BingoArtist():
         
         flip_idx = self.board_idx_to_img_idx(*np.nonzero(self.board==FLIPPED))
         for x,y in zip(*flip_idx):
-            self.board_img = cv2.circle(self.board_img,(x,y),MARK_RAD,BLACK,-1)
+            self.board_img = cv2.circle(self.board_img,(x,y),
+                                        SKULL_RAD,BLACK,SKULL_THIC)
 
         bingoed_idx = self.board_idx_to_img_idx(
                                 *np.nonzero(self.board==BINGOED))
         for x,y in zip(*bingoed_idx):
-            self.board_img = cv2.circle(self.board_img,(x,y),MARK_RAD,RED,-1)
+            self.board_img = cv2.circle(self.board_img,(x,y),
+                                        SKULL_RAD,RED,SKULL_THIC)
         
         if recommand is not None:
             rec_idx = self.board_idx_to_img_idx(*recommand)
-            self.board_img = cv2.circle(self.board_img, rec_idx, MARK_RAD, BLUE, -1)
+            self.board_img = cv2.circle(self.board_img, rec_idx, 
+                                        RECOM_RAD, BLUE, -1)
 
         if small:
             return cv2.resize(self.board_img, dsize=(0,0),fx=0.5, fy=0.5)
