@@ -178,8 +178,12 @@ class Console():
                 
             else:
                 next_board = bomb_explode(self.bingo_board,rec_pos)
+                if self.inanna and self.step==1:
+                    next_step_idx = 3
+                else:
+                    next_step_idx = (self.step+1)%3
                 next_idx = np.append(next_board.reshape(-1).astype(int),
-                                (self.step+1)%3)
+                                next_step_idx)
                 next_idx = tuple(next_idx)
                 result = self.table[next_idx]
                 next_x = result[0]
@@ -191,6 +195,10 @@ class Console():
                 ))
                 if next_w>0:
                     next_board = bomb_explode(next_board, next_pos)
+                    if self.inanna and self.step==0:
+                        next_step_idx = 3
+                    else:
+                        next_step_idx = (self.step+2)%3
                     next_idx = np.append(next_board.reshape(-1).astype(int),
                                 (self.step+2)%3)
                     next_idx = tuple(next_idx)
