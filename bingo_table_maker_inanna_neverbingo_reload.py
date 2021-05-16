@@ -1,10 +1,18 @@
 import numpy as np
 
+
 # x, y, Max 무력, Bingo 점수, 해골 위치 점수, bingo 내부 여부
 # Bingo 점수, 해골 점수: Lower is better
 # 첫번째 무력때만은 다른 상황
 q_table = np.zeros([2]*25+[4,6])
-q_filled = np.zeros([2]*25+[3], dtype=np.bool)
+q_filled = np.zeros([2]*25+[4], dtype=np.bool)
+# Load
+q_loaded = np.load('bingo_tables/bingo_table_inanna_neverbingo_backup.npz')
+q_loaded_table = q_loaded['table']
+q_loaded_filled = q_loaded['filled']
+q_table[...,:3]=q_loaded_table
+q_filled[...,:3]=q_loaded_filled
+
 MAX_STEPS = 18
 EMPTY_BOARD = np.zeros((5,5), dtype=np.bool)
 B_POINT = np.array([1,4,3,2,0,5])
