@@ -160,13 +160,7 @@ def fill_table(initial_table):
         current_index = tuple(current_index)
         before_bingo = count_bingo(current_table)
         before_bingo_x, before_bingo_y = check_bingo(current_table)
-        
-        if before_bingo == 0:
-            if not (current_index in checked):
-                need_to_check = True
-                checked.append(current_index)
-                q_filled[current_index] = False
-        
+                
                 
         possible_choices = []
         need_to_fill = False
@@ -188,6 +182,11 @@ def fill_table(initial_table):
                     next_step_idx = (step+1)%3
                 next_index = np.append(next_table.reshape(-1),next_step_idx)
                 next_index = tuple(next_index)
+
+                if next_bingo ==0:
+                    if not (next_index in checked):
+                        checked.append(current_index)
+                        q_filled[next_index] = False
                 # Ignore step == 2 : Inanna version
                 if (step%3 == 2) and new_bingo == 0 and (step>2):
                     # Game over
