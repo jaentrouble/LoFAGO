@@ -158,8 +158,8 @@ class Console():
 
         self.warning_variable.set('')
         self.weak_variable.set('')
-        if self.inanna and self.step==2:
-            step_idx = 3
+        if self.inanna and self.step<3:
+            step_idx = self.step+3
         else:
             step_idx = self.step%3
         table_idx = np.append(self.bingo_board.reshape(-1).astype(int),
@@ -178,8 +178,8 @@ class Console():
                 
             else:
                 next_board = bomb_explode(self.bingo_board,rec_pos)
-                if self.inanna and self.step==1:
-                    next_step_idx = 3
+                if self.inanna and self.step<2:
+                    next_step_idx = self.step+4
                 else:
                     next_step_idx = (self.step+1)%3
                 next_idx = np.append(next_board.reshape(-1).astype(int),
@@ -196,7 +196,7 @@ class Console():
                 if next_w>0:
                     next_board = bomb_explode(next_board, next_pos)
                     if self.inanna and self.step==0:
-                        next_step_idx = 3
+                        next_step_idx = 5
                     else:
                         next_step_idx = (self.step+2)%3
                     next_idx = np.append(next_board.reshape(-1).astype(int),
@@ -271,7 +271,7 @@ class Console():
             return
         if self.table.shape[25]==3:
             self.inanna = False
-        elif self.table.shape[25]==4:
+        elif self.table.shape[25]==6:
             self.inanna = True
         self.mode_variable.set(INFO_INIT_TWO)
         self.update()

@@ -3,9 +3,10 @@ import numpy as np
 
 # x, y, Max 무력, Bingo 점수, 해골 위치 점수, bingo 내부 여부
 # Bingo 점수, 해골 점수: Lower is better
-# 첫번째 무력때만은 다른 상황
-q_table = np.zeros([2]*25+[4,6])
-q_filled = np.zeros([2]*25+[4], dtype=np.bool)
+# 이난나는 0,1,2 step은 특수한 상황
+# (무력 이후의 3종 step) + (무력 이전 3종 step)
+q_table = np.zeros([2]*25+[6,6])
+q_filled = np.zeros([2]*25+[6], dtype=np.bool)
 # Load
 q_loaded = np.load('bingo_tables/bingo_table_inanna_neverbingo_backup.npz')
 q_loaded_table = q_loaded['table']
@@ -156,11 +157,11 @@ def fill_table(initial_table):
     
     while len(state_stack)>0:
         current_table, step = state_stack[-1]
-        if step!=2:
-            step_idx = step%3
+        if step<3:
+            step_idx = step+3
         else:
             # In inanna mode, step 2 is special
-            step_idx = 3
+            step_idx = step%3
         current_index = np.concatenate((current_table.reshape(-1),[step_idx]))
         current_index = tuple(current_index)
         before_bingo = count_bingo(current_table)
@@ -181,8 +182,8 @@ def fill_table(initial_table):
                 assert next_bingo>=before_bingo, 'Bingo number decreased!'
                 
                 new_bingo = next_bingo - before_bingo
-                if step==1:
-                    next_step_idx = 3
+                if step<2:
+                    next_step_idx = step+4
                 else:
                     next_step_idx = (step+1)%3
                 next_index_np = np.append(next_table.reshape(-1),next_step_idx)
