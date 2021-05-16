@@ -162,13 +162,13 @@ class Console():
         table_idx = np.append(self.bingo_board.reshape(-1).astype(int),
                               self.step%3)
         table_idx = tuple(table_idx)
-        if self.table_filled[table_idx]:
+        if self.table_filled[table_idx] and len(self.click_history)>=2:
             result = self.table[table_idx]
             rec_x = result[0]
             rec_y = result[1]
             max_w = result[2]
             rec_pos = (int(rec_x),int(rec_y))
-            self.weak_variable.set(f'앞으로 {int(max_w)}무력 가능')
+            self.weak_variable.set(f'앞으로 {int(max_w)}무력 가능\n(이난나 제외)')
             if max_w ==0:
                 self.warning_variable.set(WAR_IMP)
                 rec_pos = None
