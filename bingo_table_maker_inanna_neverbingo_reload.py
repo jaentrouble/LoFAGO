@@ -174,7 +174,11 @@ def fill_table(initial_table):
                 assert next_bingo>=before_bingo, 'Bingo number decreased!'
                 
                 new_bingo = next_bingo - before_bingo
-                next_index = np.append(next_table.reshape(-1),(step+1)%3)
+                if step==1:
+                    next_step_idx = 3
+                else:
+                    next_step_idx = (step+1)%3
+                next_index = np.append(next_table.reshape(-1),next_step_idx)
                 next_index = tuple(next_index)
                 # Ignore step == 2 : Inanna version
                 if (step%3 == 2) and new_bingo == 0 and (step>2):
