@@ -148,7 +148,7 @@ def fill_table(initial_table):
     stack_tqdm = tqdm.tqdm(total=1)
     max_stack = 1
     loop_n = 0
-    checked = []
+    checked = np.zeros((1,26))
     while len(state_stack)>0:
         current_table, step = state_stack[-1]
         if step!=2:
@@ -185,7 +185,7 @@ def fill_table(initial_table):
 
                 if next_bingo ==0:
                     if not (next_index in checked):
-                        checked.append(current_index)
+                        checked.append(next_index)
                         q_filled[next_index] = False
                 # Ignore step == 2 : Inanna version
                 if (step%3 == 2) and new_bingo == 0 and (step>2):
