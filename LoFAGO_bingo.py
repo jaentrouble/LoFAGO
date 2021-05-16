@@ -158,9 +158,12 @@ class Console():
 
         self.warning_variable.set('')
         self.weak_variable.set('')
-
+        if self.inanna and self.step==2:
+            step_idx = 3
+        else:
+            step_idx = self.step%3
         table_idx = np.append(self.bingo_board.reshape(-1).astype(int),
-                              self.step%3)
+                              step_idx)
         table_idx = tuple(table_idx)
         if self.table_filled[table_idx] and len(self.click_history)>=2:
             result = self.table[table_idx]
@@ -258,6 +261,10 @@ class Console():
             messagebox.showinfo(message=('테이블 로드에 실패했습니다.\n'
                                 '경로에 한글이 있는지 확인해주세요.'))
             return
+        if self.table.shape[25]==3:
+            self.inanna = False
+        elif self.table.shape[25]==4:
+            self.inanna = True
         self.mode_variable.set(INFO_INIT_TWO)
         self.update()
         self.root.mainloop()

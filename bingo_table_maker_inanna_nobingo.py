@@ -2,7 +2,8 @@ import numpy as np
 
 # x, y, Max 무력, Bingo 점수, 해골 위치 점수, bingo 내부 여부
 # Bingo 점수, 해골 점수: Lower is better
-q_table = np.zeros([2]*25+[3,6])
+# 첫번째 무력때만은 다른 상황
+q_table = np.zeros([2]*25+[4,6])
 q_filled = np.zeros([2]*25+[3], dtype=np.bool)
 MAX_STEPS = 18
 EMPTY_BOARD = np.zeros((5,5), dtype=np.bool)
@@ -141,7 +142,12 @@ def fill_table(initial_table):
     loop_n = 0
     while len(state_stack)>0:
         current_table, step = state_stack[-1]
-        current_index = np.concatenate((current_table.reshape(-1),[step%3]))
+        if step!=2:
+            step_idx = step%3
+        else:
+            # In inanna mode, step 2 is special
+            step_idx = 3
+        current_index = np.concatenate((current_table.reshape(-1),[step_idx]))
         current_index = tuple(current_index)
         
         possible_choices = []
