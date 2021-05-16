@@ -148,7 +148,7 @@ def fill_table(initial_table):
     stack_tqdm = tqdm.tqdm(total=1)
     max_stack = 1
     loop_n = 0
-    # Dummy
+    
     checked = np.zeros_like(q_filled)
     while len(state_stack)>0:
         current_table, step = state_stack[-1]
@@ -184,6 +184,7 @@ def fill_table(initial_table):
                 next_index_np = np.append(next_table.reshape(-1),next_step_idx)
                 next_index = tuple(next_index_np)
 
+                # Manually check all 0 bingo cases
                 if next_bingo ==0:
                     if not checked[next_index]:
                         checked[next_index] = True
