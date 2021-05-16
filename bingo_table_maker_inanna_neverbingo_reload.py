@@ -14,6 +14,7 @@ q_table[...,:3,:]=q_loaded_table
 q_filled[...,:3]=q_loaded_filled
 
 checked = np.zeros_like(q_filled)
+checked_count = 0
 
 MAX_STEPS = 18
 EMPTY_BOARD = np.zeros((5,5), dtype=np.bool)
@@ -191,6 +192,7 @@ def fill_table(initial_table):
                     if not checked[next_index]:
                         checked[next_index] = True
                         q_filled[next_index] = False
+                        checked_count+=1
                 # Ignore step == 2 : Inanna version
                 if (step%3 == 2) and new_bingo == 0 and (step>2):
                     # Game over
@@ -283,7 +285,7 @@ def fill_table(initial_table):
         stack_tqdm.n = len(state_stack)
         loop_n += 1
         stack_tqdm.set_description(f'loop: {loop_n}')
-        stack_tqdm.set_postfix(checked = np.sum(checked))
+        stack_tqdm.set_postfix(checked = checked_count)
         stack_tqdm.update(n=0)
     stack_tqdm.close()
 
