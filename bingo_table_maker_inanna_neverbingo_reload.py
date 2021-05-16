@@ -13,6 +13,8 @@ q_loaded_filled = q_loaded['filled']
 q_table[...,:3,:]=q_loaded_table
 q_filled[...,:3]=q_loaded_filled
 
+checked = np.zeros_like(q_filled)
+
 MAX_STEPS = 18
 EMPTY_BOARD = np.zeros((5,5), dtype=np.bool)
 B_POINT = np.array([1,4,3,2,0,5])
@@ -149,7 +151,7 @@ def fill_table(initial_table):
     max_stack = 1
     loop_n = 0
     
-    checked = np.zeros_like(q_filled)
+    
     while len(state_stack)>0:
         current_table, step = state_stack[-1]
         if step!=2:
