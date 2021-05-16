@@ -158,9 +158,9 @@ def fill_table(initial_table):
     while len(state_stack)>0:
         current_table, step = state_stack[-1]
         if step<3:
+            # In inanna mode, step 0~2 is special
             step_idx = step+3
         else:
-            # In inanna mode, step 2 is special
             step_idx = step%3
         current_index = np.concatenate((current_table.reshape(-1),[step_idx]))
         current_index = tuple(current_index)
