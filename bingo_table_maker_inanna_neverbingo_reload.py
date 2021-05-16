@@ -149,7 +149,7 @@ def fill_table(initial_table):
     max_stack = 1
     loop_n = 0
     # Dummy
-    checked = [[0]*25+[0]]
+    checked = []
     while len(state_stack)>0:
         current_table, step = state_stack[-1]
         if step!=2:
@@ -185,7 +185,7 @@ def fill_table(initial_table):
                 next_index = tuple(next_index_np)
 
                 if next_bingo ==0:
-                    if not np.any(np.all(checked==next_index_np,axis=1)):
+                    if not next_index in checked:
                         checked.append(next_index)
                         q_filled[next_index] = False
                 # Ignore step == 2 : Inanna version
