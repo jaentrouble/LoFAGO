@@ -148,7 +148,7 @@ def fill_table(initial_table):
     stack_tqdm = tqdm.tqdm(total=1)
     max_stack = 1
     loop_n = 0
-    checked = np.zeros((1,26))
+    checked = []
     while len(state_stack)>0:
         current_table, step = state_stack[-1]
         if step!=2:
