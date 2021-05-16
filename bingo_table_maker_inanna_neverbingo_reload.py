@@ -279,6 +279,7 @@ def fill_table(initial_table):
         stack_tqdm.n = len(state_stack)
         loop_n += 1
         stack_tqdm.set_description(f'loop: {loop_n}')
+        stack_tqdm.set_postfix(checked = len(checked))
         stack_tqdm.update(n=0)
     stack_tqdm.close()
 
