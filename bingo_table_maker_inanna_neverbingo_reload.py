@@ -10,7 +10,7 @@ q_filled = np.zeros([2]*25+[4], dtype=np.bool)
 q_loaded = np.load('bingo_tables/bingo_table_inanna_neverbingo_backup.npz')
 q_loaded_table = q_loaded['table']
 q_loaded_filled = q_loaded['filled']
-q_table[...,:3]=q_loaded_table
+q_table[...,:3,:]=q_loaded_table
 q_filled[...,:3]=q_loaded_filled
 
 MAX_STEPS = 18
