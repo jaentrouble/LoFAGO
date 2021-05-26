@@ -145,7 +145,7 @@ def bomb_explode(table, bomb_pos):
 def fill_table(initial_table):
     import tqdm
     state_stack = [(initial_table,0)]
-    stack_tqdm = tqdm.tqdm(total=1)
+    stack_tqdm = tqdm.tqdm(total=1, dynamic_ncols=True)
     max_stack = 1
     loop_n = 0
     global checked_count
