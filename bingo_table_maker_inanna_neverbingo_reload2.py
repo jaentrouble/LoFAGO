@@ -313,8 +313,8 @@ if __name__ == '__main__':
     for i in range(5):
         p = Process(target=fill_table, args=(
                 initial_tables[i*60:(i+1)*60],
-                q_table.copy(),
-                q_filled.copy(),
+                q_table,
+                q_filled,
                 q_Qs[i],
                 i==0,
             ), daemon=True)
