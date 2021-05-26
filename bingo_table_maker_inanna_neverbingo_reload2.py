@@ -144,7 +144,7 @@ def fill_table(initial_tables, q_table, q_filled, q_Q, use_tqdm=False):
     for initial_table in initial_tables:
         state_stack.append((initial_table,0))
     if use_tqdm:
-        stack_tqdm = tqdm.tqdm(total=1, ncols=80)
+        stack_tqdm = tqdm.tqdm(total=1, ncols=130)
     max_stack = 1
     loop_n = 0
     
@@ -319,7 +319,7 @@ if __name__ == '__main__':
                 i==0,
             ), daemon=True)
         all_processes.append(p)
-        p.run()
+        p.start()
     all_tables = []
     all_filled = []
     while len(all_tables)<30:
