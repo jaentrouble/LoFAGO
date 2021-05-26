@@ -189,8 +189,8 @@ def fill_table(initial_table):
                 next_index_np = np.append(next_table.reshape(-1),next_step_idx)
                 next_index = tuple(next_index_np)
 
-                # Manually check all 0 bingo cases
-                if next_bingo ==0 and step<3:
+                # Recheck all cases under step 6
+                if step<6:
                     if not checked[next_index]:
                         checked[next_index] = True
                         q_filled[next_index] = False
