@@ -310,9 +310,9 @@ if __name__ == '__main__':
             initial_tables.append(initial_table)
     q_Qs = [Queue() for _ in range(30)]
     all_processes = []
-    for i in range(5):
+    for i in range(6):
         p = Process(target=fill_table, args=(
-                initial_tables[i*60:(i+1)*60],
+                initial_tables[i*50:(i+1)*50],
                 q_table,
                 q_filled,
                 q_Qs[i],
@@ -322,7 +322,7 @@ if __name__ == '__main__':
         p.start()
     all_tables = []
     all_filled = []
-    while len(all_tables)<5:
+    while len(all_tables)<6:
         for q in q_Qs:
             if not q.empty():
                 table, filled = q.get()
