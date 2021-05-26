@@ -1,17 +1,10 @@
 import numpy as np
-
+from multiprocessing import Process, Queue
 
 # x, y, Max 무력, Bingo 점수, 해골 위치 점수, bingo 내부 여부
 # Bingo 점수, 해골 점수: Lower is better
 # 이난나는 0,1,2 step은 특수한 상황
 # (무력 이후의 3종 step) + (무력 이전 3종 step)
-# Load
-q_loaded = np.load('bingo_tables/bingo_table_inanna_neverbingo_backup2.npz')
-q_table = q_loaded['table']
-q_filled = q_loaded['filled']
-
-checked = np.zeros_like(q_filled)
-checked_count = 0
 
 MAX_STEPS = 18
 EMPTY_BOARD = np.zeros((5,5), dtype=np.bool)
@@ -142,13 +135,18 @@ def bomb_explode(table, bomb_pos):
     return next_table
 
 
-def fill_table(initial_table):
+def fill_table(initial_tables, q_table, q_filled, q_Q, use_tqdm=False):
     import tqdm
-    state_stack = [(initial_table,0)]
-    stack_tqdm = tqdm.tqdm(total=1, dynamic_ncols=True)
+    checked = np.zeros_like(q_filled)
+    checked_count = 0
+
+    state_stack = []
+    for initial_table in initial_tables:
+        state_stack.append((initial_table,0))
+    if use_tqdm:
+        stack_tqdm = tqdm.tqdm(total=1, dynamic_ncols=True)
     max_stack = 1
     loop_n = 0
-    global checked_count
     
     
     while len(state_stack)>0:
@@ -277,34 +275,71 @@ def fill_table(initial_table):
             q_filled[current_index] = True
             state_stack.pop()
 
-        if len(state_stack)>max_stack:
+        if len(state_stack)>max_stack and use_tqdm:
             max_stack = len(state_stack)
             stack_tqdm.total = max_stack
-        stack_tqdm.n = len(state_stack)
-        loop_n += 1
-        stack_tqdm.set_description(f'loop: {loop_n}')
-        stack_tqdm.set_postfix(checked = checked_count)
-        stack_tqdm.update(n=0)
-    stack_tqdm.close()
+        if use_tqdm:
+            stack_tqdm.n = len(state_stack)
+            loop_n += 1
+            stack_tqdm.set_description(f'loop: {loop_n}')
+            stack_tqdm.set_postfix(checked = checked_count)
+            stack_tqdm.update(n=0)
+    if use_tqdm:
+        stack_tqdm.close()
+    q_Q.put((q_table, q_filled))
 
 if __name__ == '__main__':
+    q_loaded = np.load('bingo_tables/bingo_table_inanna_neverbingo_backup2.npz')
+    q_table = q_loaded['table']
+    q_filled = q_loaded['filled']
+
+
     from time import time
     import datetime
     st = time()
+    initial_tables = []
     for p1 in range(24):
         for p2 in range(p1+1,25):
             x1 = p1//5
             y1 = p1%5
             x2 = p2//5
             y2 = p2%5
-            print([x1,y1,x2,y2])
             initial_table = np.zeros((5,5),dtype=np.bool)
             initial_table[x1,y1] = True
             initial_table[x2,y2] = True
-            fill_table(initial_table)
-            print(str(datetime.timedelta(seconds=time()-st)))
-    np.savez_compressed('bingo_tables/bingo_table_inanna_neverbingo.npz',
-                        table=q_table, filled=q_filled)
+            initial_tables.append(initial_table)
+    q_Qs = [Queue() for _ in range(30)]
+    all_processes = []
+    for i in range(30):
+        p = Process(target=fill_table, args=(
+                initial_tables[i*10:(i+1)*10],
+                q_table.copy(),
+                q_filled.copy(),
+                q_Qs[i],
+                i==0,
+            ), daemon=True)
+        all_processes.append(p)
+        p.run()
+    all_tables = []
+    all_filled = []
+    while len(all_tables)<30:
+        for q in q_Qs:
+            if not q.empty():
+                table, filled = q.get()
+                all_tables.append(table)
+                all_filled.append(filled)
+    merged_table = all_tables[0]
+    merged_filled = all_filled[0]
+    for table, filled in zip(all_tables[1:], all_filled[1:]):
+        merged_table = np.where(merged_filled[...,np.newaxis], 
+                                merged_table, table)
+        merged_filled = np.logical_or(merged_filled, filled)
+
+    print(str(datetime.timedelta(seconds=time()-st)))
+    np.savez_compressed('bingo_tables/bingo_table_inanna_neverbingo_multi.npz',
+                        table=merged_table, filled=merged_filled)
+    for p in all_processes:
+        p.join()
     # test=bomb_explode(initial_table, [3,1])
     # test=bomb_explode(test,[3,4])
     # print(test)
