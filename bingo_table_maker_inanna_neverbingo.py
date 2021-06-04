@@ -135,8 +135,8 @@ def bomb_explode(table, bomb_pos):
     return next_table
 
 
-def fill_table(initial_tables, q_Q, use_tqdm=False):
-    q_table = np.zeros([2]*25+[6,6])
+def fill_table(initial_tables, tid, use_tqdm=False):
+    q_table = np.zeros([2]*25+[6,6], dtype=np.int16)
     q_filled = np.zeros([2]*25+[6], dtype=np.bool)
 
 
@@ -269,7 +269,7 @@ def fill_table(initial_tables, q_Q, use_tqdm=False):
                 elif min_skull_p==bc2[4]:
                     best_choices_3.append(bc2)
 
-            q_table[current_index] = best_choices_3[0]
+            q_table[current_index] = np.array(best_choices_3[0],dtype=np.int16)
             q_filled[current_index] = True
             state_stack.pop()
 
@@ -283,7 +283,8 @@ def fill_table(initial_tables, q_Q, use_tqdm=False):
             stack_tqdm.update(n=0)
     if use_tqdm:
         stack_tqdm.close()
-    q_Q.put((q_table, q_filled))
+    np.savez_compressed(f'bingo_tables/bingo_table_inanna_neverbingo_multi_{tid}.npz',
+                        table=q_table, filled=q_filled)
 
 if __name__ == '__main__':
 
@@ -303,32 +304,32 @@ if __name__ == '__main__':
             initial_tables.append(initial_table)
     q_Qs = [Queue() for _ in range(30)]
     all_processes = []
-    for i in range(6):
+    for i in range(30):
         p = Process(target=fill_table, args=(
-                initial_tables[i*50:(i+1)*50],
+                initial_tables[i*10:(i+1)*10],
                 q_Qs[i],
                 i==0,
             ), daemon=True)
         all_processes.append(p)
         p.start()
-    all_tables = []
-    all_filled = []
-    while len(all_tables)<6:
-        for q in q_Qs:
-            if not q.empty():
-                table, filled = q.get()
-                all_tables.append(table)
-                all_filled.append(filled)
-    merged_table = all_tables[0]
-    merged_filled = all_filled[0]
-    for table, filled in zip(all_tables[1:], all_filled[1:]):
-        merged_table = np.where(merged_filled[...,np.newaxis], 
-                                merged_table, table)
-        merged_filled = np.logical_or(merged_filled, filled)
+    # all_tables = []
+    # all_filled = []
+    # while len(all_tables)<6:
+    #     for q in q_Qs:
+    #         if not q.empty():
+    #             table, filled = q.get()
+    #             all_tables.append(table)
+    #             all_filled.append(filled)
+    # merged_table = all_tables[0]
+    # merged_filled = all_filled[0]
+    # for table, filled in zip(all_tables[1:], all_filled[1:]):
+    #     merged_table = np.where(merged_filled[...,np.newaxis], 
+    #                             merged_table, table)
+    #     merged_filled = np.logical_or(merged_filled, filled)
 
-    print(str(datetime.timedelta(seconds=time()-st)))
-    np.savez_compressed('bingo_tables/bingo_table_inanna_neverbingo_multi.npz',
-                        table=merged_table, filled=merged_filled)
+    # print(str(datetime.timedelta(seconds=time()-st)))
+    # np.savez_compressed('bingo_tables/bingo_table_inanna_neverbingo_multi.npz',
+    #                     table=merged_table, filled=merged_filled)
     for p in all_processes:
         p.join()
     # test=bomb_explode(initial_table, [3,1])
