@@ -207,6 +207,8 @@ def fill_table(initial_tables, q_table, q_filled, q_Q, use_tqdm=False):
                             q_table[next_index][4]+skull_point(next_table),
                             recommandable,
                         ])
+                    elif step==2 and new_bingo>0:
+                        pass
                     else:
                         # No need to weak kuku,
                         # Unnecessary bingo
