@@ -141,7 +141,6 @@ def fill_table(initial_tables, q_Q, use_tqdm=False):
 
 
     import tqdm
-    checked_count = 0
 
     state_stack = []
     for initial_table in initial_tables:
@@ -281,8 +280,6 @@ def fill_table(initial_tables, q_Q, use_tqdm=False):
             stack_tqdm.n = len(state_stack)
             loop_n += 1
             stack_tqdm.set_description(f'loop: {loop_n}')
-            checked_count += 1
-            stack_tqdm.set_postfix(checked = checked_count)
             stack_tqdm.update(n=0)
     if use_tqdm:
         stack_tqdm.close()
