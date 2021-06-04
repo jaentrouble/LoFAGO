@@ -326,12 +326,11 @@ if __name__ == '__main__':
     #     merged_table = np.where(merged_filled[...,np.newaxis], 
     #                             merged_table, table)
     #     merged_filled = np.logical_or(merged_filled, filled)
-
+    for p in all_processes:
+        p.join()
     print(str(datetime.timedelta(seconds=time()-st)))
     # np.savez_compressed('bingo_tables/bingo_table_inanna_neverbingo_multi.npz',
     #                     table=merged_table, filled=merged_filled)
-    for p in all_processes:
-        p.join()
     # test=bomb_explode(initial_table, [3,1])
     # test=bomb_explode(test,[3,4])
     # print(test)
