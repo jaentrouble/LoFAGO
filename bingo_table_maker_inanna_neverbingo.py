@@ -135,7 +135,11 @@ def bomb_explode(table, bomb_pos):
     return next_table
 
 
-def fill_table(initial_tables, q_table, q_filled, q_Q, use_tqdm=False):
+def fill_table(initial_tables, q_Q, use_tqdm=False):
+    q_table = np.zeros([2]*25+[6,6])
+    q_filled = np.zeros([2]*25+[6], dtype=np.bool)
+
+
     import tqdm
     checked_count = 0
 
@@ -284,9 +288,6 @@ def fill_table(initial_tables, q_table, q_filled, q_Q, use_tqdm=False):
     q_Q.put((q_table, q_filled))
 
 if __name__ == '__main__':
-    q_table = np.zeros([2]*25+[6,6])
-    q_filled = np.zeros([2]*25+[6], dtype=np.bool)
-
 
     from time import time
     import datetime
@@ -307,8 +308,6 @@ if __name__ == '__main__':
     for i in range(6):
         p = Process(target=fill_table, args=(
                 initial_tables[i*50:(i+1)*50],
-                q_table,
-                q_filled,
                 q_Qs[i],
                 i==0,
             ), daemon=True)
