@@ -170,7 +170,7 @@ def fill_table(initial_tables, q_Q, use_tqdm=False):
         for action_x in range(5):
             for action_y in range(5):
                 if is_in_bingo(current_table, action_x, action_y):
-                    recommandable = 0
+                    continue
                 else:
                     recommandable = 1
                 next_table = bomb_explode(current_table, (action_x,action_y))
@@ -236,13 +236,6 @@ def fill_table(initial_tables, q_Q, use_tqdm=False):
             max_weak = 0
             # over weak_limit is treated the same
             current_weak_limit = max(0,WEAK_LIMIT-(step//3))
-            # if there's any recommandable, that is the primary selection
-            recommandable_choices = []
-            for pc in possible_choices:
-                if pc[5]==1:
-                    recommandable_choices.append(pc)
-            if len(recommandable_choices)>0:
-                possible_choices = recommandable_choices
             for pc in possible_choices:
                 if max_weak<pc[2] and max_weak<current_weak_limit:
                     best_choices = []
