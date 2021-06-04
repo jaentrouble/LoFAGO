@@ -327,7 +327,7 @@ if __name__ == '__main__':
     #                             merged_table, table)
     #     merged_filled = np.logical_or(merged_filled, filled)
 
-    # print(str(datetime.timedelta(seconds=time()-st)))
+    print(str(datetime.timedelta(seconds=time()-st)))
     # np.savez_compressed('bingo_tables/bingo_table_inanna_neverbingo_multi.npz',
     #                     table=merged_table, filled=merged_filled)
     for p in all_processes:
