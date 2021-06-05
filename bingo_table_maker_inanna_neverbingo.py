@@ -307,7 +307,7 @@ if __name__ == '__main__':
     for i in range(30):
         p = Process(target=fill_table, args=(
                 initial_tables[i*10:(i+1)*10],
-                q_Qs[i],
+                i,
                 i==0,
             ), daemon=True)
         all_processes.append(p)
