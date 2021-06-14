@@ -6,6 +6,8 @@ from bingo_artist import *
 from functools import partial
 from tkinter import filedialog, messagebox
 from bingo_table_maker import bomb_explode
+from pathlib import Path
+import sys
 
 MODE_FLIP = 0
 MODE_INIT = 1
@@ -37,7 +39,7 @@ class Console():
         for x in range(5):
             row_buttons = []
             for y in range(5):
-                new_button = ttk.Button(self.root,width=5,text=f'{x+1},{y+1}',
+                new_button = ttk.Button(self.root,width=5,text=f'{5*x+y+1}',
                         command=partial(self.bingo_button_callback,x,y))
                 new_button.place(x=MIDDLE-20-SPACE*x+SPACE*y,
                                  y=SPACE*(x+y+1))
@@ -260,7 +262,15 @@ class Console():
         
     def run(self):
         self.mode_variable.set(INFO_LOADING)
-        dirname = filedialog.askopenfilename(filetypes=[('넘파이 압축 파일','*.npz')])
+        # dirname = filedialog.askopenfilename(filetypes=[('넘파이 압축 파일','*.npz')])
+        if getattr(sys,'frozen',False) and hasattr(sys,'_MEIPASS'):
+            rel_path='bingo_table_nonanna_nobingo.npz'
+            bundle_dir = Path(sys._MEIPASS)
+        else:
+            rel_path='bingo_tables/dist/bingo_table_nonanna_nobingo.npz'
+            bundle_dir = Path('')
+        dirname=str(bundle_dir/rel_path)
+
         try:
             loaded_file = np.load(dirname.encode('unicode_escape'))
             self.table = loaded_file['table']
