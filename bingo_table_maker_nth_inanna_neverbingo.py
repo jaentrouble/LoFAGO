@@ -283,7 +283,7 @@ def fill_table(initial_tables, nth_inanna, tid, use_tqdm=False):
             stack_tqdm.update(n=0)
     if use_tqdm:
         stack_tqdm.close()
-    np.savez_compressed(f'bingo_tables/bingo_table_inanna_neverbingo_multi_{tid}.npz',
+    np.savez_compressed(f'bingo_tables/nth/bingo_table_inanna_neverbingo_multi_{tid}.npz',
                         table=q_table, filled=q_filled)
 
 if __name__ == '__main__':
