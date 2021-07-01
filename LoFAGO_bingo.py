@@ -5,7 +5,7 @@ from PIL import ImageTk, Image
 from bingo_artist import *
 from functools import partial
 from tkinter import filedialog, messagebox
-from bingo_table_maker import bomb_explode
+from bingo_table_maker import bomb_explode, count_bingo
 
 MODE_FLIP = 0
 MODE_INIT = 1
@@ -19,6 +19,7 @@ INFO_BOMB = '폭탄 모드'
 WAR_IMP = '무력화 불가!!'
 WAR_UNK = '폭탄만으로 나올 수 없는 배치입니다.\n혹시 이난나 버전이 아닌데\n이난나를 사용하셨나요?'
 
+BIG_DIFF = -100
 
 class Console():
     def __init__(self) -> None:
@@ -110,10 +111,10 @@ class Console():
         )
         self.button_cancel.place(x=SIZE+200, y=100)
         
-        self.label_future_1 = ttk.Label(self.root)
-        self.label_future_1.place(x=SIZE+10, y=MIDDLE)
-        self.label_future_2 = ttk.Label(self.root)
-        self.label_future_2.place(x=SIZE+MIDDLE+10, y=MIDDLE)
+        # self.label_future_1 = ttk.Label(self.root)
+        # self.label_future_1.place(x=SIZE+10, y=MIDDLE)
+        # self.label_future_2 = ttk.Label(self.root)
+        # self.label_future_2.place(x=SIZE+MIDDLE+10, y=MIDDLE)
 
 
 
@@ -171,54 +172,59 @@ class Console():
             rec_y = result[1]
             max_w = result[2]
             rec_pos = (int(rec_x),int(rec_y))
-            self.weak_variable.set(f'앞으로 {int(max_w)}무력 가능\n(이난나 제외)')
+            self.weak_variable.set(f'앞으로 {int(max_w)}빙고 가능\n(이난나 제외)')
             if max_w ==0:
                 self.warning_variable.set(WAR_IMP)
                 rec_pos = None
                 
-            else:
-                next_board = bomb_explode(self.bingo_board,rec_pos)
-                if self.inanna and self.step<2:
-                    next_step_idx = self.step+4
-                else:
-                    next_step_idx = (self.step+1)%3
-                next_idx = np.append(next_board.reshape(-1).astype(int),
-                                next_step_idx)
-                next_idx = tuple(next_idx)
-                result = self.table[next_idx]
-                next_x = result[0]
-                next_y = result[1]
-                next_w = result[2]
-                next_pos = (int(next_x),int(next_y))
-                self.future_img1 = ImageTk.PhotoImage(Image.fromarray(
-                    self.bingo_artist.draw_board(next_board,next_pos,small=True)
-                ))
-                if next_w>0:
-                    next_board = bomb_explode(next_board, next_pos)
-                    if self.inanna and self.step==0:
-                        next_step_idx = 5
-                    else:
-                        next_step_idx = (self.step+2)%3
-                    next_idx = np.append(next_board.reshape(-1).astype(int),
-                                next_step_idx)
-                    next_idx = tuple(next_idx)
-                    result = self.table[next_idx]
-                    next_x = result[0]
-                    next_y = result[1]
-                    next_pos = (int(next_x),int(next_y))
-                    self.future_img2 = ImageTk.PhotoImage(Image.fromarray(
-                        self.bingo_artist.draw_board(next_board,next_pos,small=True)
-                    ))
+            # else:
+                # next_board = bomb_explode(self.bingo_board,rec_pos)
+                # if self.inanna and self.step<2:
+                #     next_step_idx = self.step+4
+                # else:
+                #     next_step_idx = (self.step+1)%3
+                # next_idx = np.append(next_board.reshape(-1).astype(int),
+                #                 next_step_idx)
+                # next_idx = tuple(next_idx)
+                # result = self.table[next_idx]
+                # next_x = result[0]
+                # next_y = result[1]
+                # next_w = result[2]
+                # next_pos = (int(next_x),int(next_y))
+                # self.future_img1 = ImageTk.PhotoImage(Image.fromarray(
+                #     self.bingo_artist.draw_board(next_board,next_pos,small=True)
+                # ))
+                # if next_w>0:
+                #     next_board = bomb_explode(next_board, next_pos)
+                #     if self.inanna and self.step==0:
+                #         next_step_idx = 5
+                #     else:
+                #         next_step_idx = (self.step+2)%3
+                #     next_idx = np.append(next_board.reshape(-1).astype(int),
+                #                 next_step_idx)
+                #     next_idx = tuple(next_idx)
+                #     result = self.table[next_idx]
+                #     next_x = result[0]
+                #     next_y = result[1]
+                #     next_pos = (int(next_x),int(next_y))
+                    # self.future_img2 = ImageTk.PhotoImage(Image.fromarray(
+                    #     self.bingo_artist.draw_board(next_board,next_pos,small=True)
+                    # ))
         else:
             rec_pos = None
             
             if len(self.click_history)>2:
                 self.warning_variable.set(WAR_UNK)
 
+        need_to_weak = False
         if not self.mode==MODE_INIT:
             text = f'{self.step+1}번째 폭탄'
             if self.step%3==2:
-                text += '(이번에 무력화)'
+                if self.inanna and self.step==2 :
+                    text += '(이번에 이난나 사용)'
+                else:
+                    text += '(이번에 무력화)'
+                    need_to_weak = True
             self.step_variable.set(text)
         else:
             self.step_variable.set('')
@@ -228,13 +234,37 @@ class Console():
         elif self.mode == MODE_BOMB:
             self.mode_variable.set(INFO_BOMB)
 
+        if self.inanna and self.step<2:
+            next_step_idx = self.step+4
+        else:
+            next_step_idx = (self.step+1)%3
+        diff_board = np.ones((5,5),dtype=int)*BIG_DIFF
+        print(need_to_weak)
+        if rec_pos is not None:
+            for x in range(5):
+                for y in range(5):
+                    tmp_next = bomb_explode(self.bingo_board, (x,y))
+                    tmp_table_idx = np.append(tmp_next.reshape(-1).astype(int),
+                                            next_step_idx)
+                    tmp_table_idx = tuple(tmp_table_idx)
+                    tmp_result = self.table[tmp_table_idx]
+                    tmp_w = tmp_result[2]
+                    diff_board[x,y] = int(tmp_w)
+                    if need_to_weak:
+                        if (count_bingo(tmp_next)-
+                            count_bingo(self.bingo_board)<1):
+                            diff_board[x,y]= BIG_DIFF
+                    print(diff_board)
+            diff_board = diff_board[rec_x,rec_y] - diff_board
+            print(diff_board)
+
         self.bingo_img = ImageTk.PhotoImage(Image.fromarray(
-                self.bingo_artist.draw_board(self.bingo_board,rec_pos)))
+            self.bingo_artist.draw_board(self.bingo_board,diff_board,rec_pos)))
         self.label_main_bingo.configure(
             image=self.bingo_img
         )
-        self.label_future_1.configure(image=self.future_img1)
-        self.label_future_2.configure(image=self.future_img2)
+        # self.label_future_1.configure(image=self.future_img1)
+        # self.label_future_2.configure(image=self.future_img2)
 
     def bingo_button_callback(self,x,y):
         self.click_history.append((x,y,self.mode))

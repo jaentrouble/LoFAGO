@@ -4,7 +4,12 @@ import cv2
 EMPTY = 0
 FLIPPED = 1
 BINGOED = 2
-RECOMMAND = 3
+
+# RGB
+DIFF_COLOR = [
+    (0,255,0),
+    (255,255,0)
+]
 
 SIZE = 640
 MIDDLE = int(SIZE/2)
@@ -41,7 +46,7 @@ class BingoArtist():
         self.board_img = board
         self.board = np.zeros((5,5),dtype=np.int)
 
-    def draw_board(self, board, recommand=None, small=False):
+    def draw_board(self, board, diff_board, recommand=None, small=False):
         """draw_board
         update the board and get board image
 
@@ -80,7 +85,19 @@ class BingoArtist():
         for x,y in zip(*bingoed_idx):
             self.board_img = cv2.circle(self.board_img,(x,y),
                                         SKULL_RAD,RED,SKULL_THIC)
-        
+
+        for x in range(5):
+            for y in range(5):
+                diff = diff_board[x,y]
+                if diff<2 and diff>=0:
+                    self.board_img = cv2.circle(
+                        self.board_img,
+                        self.board_idx_to_img_idx(x,y),
+                        RECOM_RAD,
+                        DIFF_COLOR[diff_board[x,y]],
+                        -1
+                    )
+    
         if recommand is not None:
             rec_idx = self.board_idx_to_img_idx(*recommand)
             self.board_img = cv2.circle(self.board_img, rec_idx, 
