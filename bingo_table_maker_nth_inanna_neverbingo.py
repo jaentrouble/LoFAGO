@@ -152,7 +152,7 @@ def fill_table(initial_tables, nth_inanna, tid, use_tqdm=False):
     while len(state_stack)>0:
         current_table, step = state_stack[-1]
         inanna_step = False
-        if nth_inanna*3<=step and step<(nth_inanna-1)*3:
+        if nth_inanna*3<=step and step<(nth_inanna+1)*3:
             # Inanna steps
             step_idx = step%3+3
             inanna_step = True
