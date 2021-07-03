@@ -305,11 +305,11 @@ if __name__ == '__main__':
             initial_tables.append(initial_table)
     q_Qs = [Queue() for _ in range(30)]
     all_processes = []
-    for i in range(1,6): #inanna
+    for i in range(5): #inanna
         for j in range(6): #table div
             p = Process(target=fill_table, args=(
                     initial_tables[j*50:(j+1)*50],
-                    i,
+                    i+1, # From 1 to 5 (0 is already done)
                     i*6+j,
                     i==0 and j==0,
                 ), daemon=True)
