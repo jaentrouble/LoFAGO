@@ -141,148 +141,149 @@ def fill_table(initial_tables, nth_inanna, tid, use_tqdm=False):
     import tqdm
 
     state_stack = []
-    for initial_table in initial_tables:
+    for i,initial_table in enumerate(initial_tables):
+        print(f'proc {tid} starting {i+1}/{len(initial_tables)}')
         state_stack.append((initial_table,0))
-    if use_tqdm:
-        stack_tqdm = tqdm.tqdm(total=1, ncols=130)
-    max_stack = 1
-    loop_n = 0
-    
-    
-    while len(state_stack)>0:
-        current_table, step = state_stack[-1]
-        inanna_step = False
-        if nth_inanna*3<=step and step<(nth_inanna+1)*3:
-            # Inanna steps
-            step_idx = step%3+3
-            inanna_step = True
-        else:
-            step_idx = step%3
-        current_index = np.concatenate((current_table.reshape(-1),[step_idx]))
-        current_index = tuple(current_index)
-        before_bingo = count_bingo(current_table)
-        before_bingo_x, before_bingo_y = check_bingo(current_table)
-                
-                
-        possible_choices = []
-        need_to_fill = False
-        for action_x in range(5):
-            for action_y in range(5):
-                if is_in_bingo(current_table, action_x, action_y):
-                    recommandable = 0
-                else:
-                    recommandable = 1
-                next_table = bomb_explode(current_table, (action_x,action_y))
-                next_bingo = count_bingo(next_table)
-                next_bingo_x, next_bingo_y = check_bingo(next_table)
-                assert next_bingo>=before_bingo, 'Bingo number decreased!'
-                
-                new_bingo = next_bingo - before_bingo
-                if step<2:
-                    next_step_idx = step+4
-                else:
-                    next_step_idx = (step+1)%3
-                next_index_np = np.append(next_table.reshape(-1),next_step_idx)
-                next_index = tuple(next_index_np)
-
-                # No game over when inanna step
-                if (step%3 == 2) and new_bingo == 0 and not inanna_step:
-                    # Game over
-                    possible_choices.append([
-                        action_x,
-                        action_y,
-                        0,
-                        0,
-                        0,
-                        recommandable,
-                    ])
-                elif q_filled[next_index]:
-                    if (step%3==2) and new_bingo>0 and not inanna_step:
-                        # 무력 성공
-                        possible_choices.append([
-                            action_x,
-                            action_y,
-                            q_table[next_index][2]+1,
-                            q_table[next_index][3]\
-                                +bingo_point(before_bingo_x, next_bingo_x)\
-                                +bingo_point(before_bingo_y, next_bingo_y)\
-                                +B_N_PENALTY*(new_bingo-1),
-                            q_table[next_index][4]+skull_point(next_table),
-                            recommandable,
-                        ])
-                    elif step==2 and new_bingo>0:
-                        pass
-                    else:
-                        # No need to weak kuku,
-                        # Unnecessary bingo
-                        possible_choices.append([
-                            action_x,
-                            action_y,
-                            q_table[next_index][2],
-                            q_table[next_index][3]\
-                                +bingo_point(before_bingo_x, next_bingo_x)\
-                                +bingo_point(before_bingo_y, next_bingo_y)\
-                                +B_N_PENALTY*new_bingo,
-                            q_table[next_index][4]+skull_point(next_table),
-                            recommandable,
-                        ])
-                else:
-                    state_stack.append((next_table, step+1))
-                    need_to_fill = True
-        if not need_to_fill:
-            # All checked
-            best_choices = []
-            max_weak = 0
-            # over weak_limit is treated the same
-            current_weak_limit = max(0,WEAK_LIMIT-(step//3))
-            # if there's any recommandable, that is the primary selection
-            recommandable_choices = []
-            for pc in possible_choices:
-                if pc[5]==1:
-                    recommandable_choices.append(pc)
-            if len(recommandable_choices)>0:
-                possible_choices = recommandable_choices
-            for pc in possible_choices:
-                if max_weak<pc[2] and max_weak<current_weak_limit:
-                    best_choices = []
-                    best_choices.append(pc)
-                    max_weak = min(pc[2],current_weak_limit)
-                elif (max_weak==pc[2] or 
-                    (max_weak==current_weak_limit and pc[2]>=max_weak)):
-                    best_choices.append(pc)
-            min_bingo_p = best_choices[0][3]
-            best_choices_2 = []
-            for bc in best_choices:
-                if min_bingo_p>bc[3]:
-                    best_choices_2=[]
-                    best_choices_2.append(bc)
-                    min_bingo_p = bc[3]
-                elif min_bingo_p == bc[3]:
-                    best_choices_2.append(bc)
-            min_skull_p = best_choices_2[0][4]
-            best_choices_3 = []
-            for bc2 in best_choices_2:
-                if min_skull_p>bc2[4]:
-                    best_choices_3=[]
-                    best_choices_3.append(bc2)
-                    min_skull_p = bc2[4]
-                elif min_skull_p==bc2[4]:
-                    best_choices_3.append(bc2)
-
-            q_table[current_index] = np.array(best_choices_3[0],dtype=np.int16)
-            q_filled[current_index] = True
-            state_stack.pop()
-
-        if len(state_stack)>max_stack and use_tqdm:
-            max_stack = len(state_stack)
-            stack_tqdm.total = max_stack
         if use_tqdm:
-            stack_tqdm.n = len(state_stack)
-            loop_n += 1
-            stack_tqdm.set_description(f'loop: {loop_n}')
-            stack_tqdm.update(n=0)
-    if use_tqdm:
-        stack_tqdm.close()
+            stack_tqdm = tqdm.tqdm(total=1, ncols=130)
+        max_stack = 1
+        loop_n = 0
+        
+        
+        while len(state_stack)>0:
+            current_table, step = state_stack[-1]
+            inanna_step = False
+            if nth_inanna*3<=step and step<(nth_inanna+1)*3:
+                # Inanna steps
+                step_idx = step%3+3
+                inanna_step = True
+            else:
+                step_idx = step%3
+            current_index = np.concatenate((current_table.reshape(-1),[step_idx]))
+            current_index = tuple(current_index)
+            before_bingo = count_bingo(current_table)
+            before_bingo_x, before_bingo_y = check_bingo(current_table)
+                    
+                    
+            possible_choices = []
+            need_to_fill = False
+            for action_x in range(5):
+                for action_y in range(5):
+                    if is_in_bingo(current_table, action_x, action_y):
+                        recommandable = 0
+                    else:
+                        recommandable = 1
+                    next_table = bomb_explode(current_table, (action_x,action_y))
+                    next_bingo = count_bingo(next_table)
+                    next_bingo_x, next_bingo_y = check_bingo(next_table)
+                    assert next_bingo>=before_bingo, 'Bingo number decreased!'
+                    
+                    new_bingo = next_bingo - before_bingo
+                    if step<2:
+                        next_step_idx = step+4
+                    else:
+                        next_step_idx = (step+1)%3
+                    next_index_np = np.append(next_table.reshape(-1),next_step_idx)
+                    next_index = tuple(next_index_np)
+
+                    # No game over when inanna step
+                    if (step%3 == 2) and new_bingo == 0 and not inanna_step:
+                        # Game over
+                        possible_choices.append([
+                            action_x,
+                            action_y,
+                            0,
+                            0,
+                            0,
+                            recommandable,
+                        ])
+                    elif q_filled[next_index]:
+                        if (step%3==2) and new_bingo>0 and not inanna_step:
+                            # 무력 성공
+                            possible_choices.append([
+                                action_x,
+                                action_y,
+                                q_table[next_index][2]+1,
+                                q_table[next_index][3]\
+                                    +bingo_point(before_bingo_x, next_bingo_x)\
+                                    +bingo_point(before_bingo_y, next_bingo_y)\
+                                    +B_N_PENALTY*(new_bingo-1),
+                                q_table[next_index][4]+skull_point(next_table),
+                                recommandable,
+                            ])
+                        elif step==2 and new_bingo>0:
+                            pass
+                        else:
+                            # No need to weak kuku,
+                            # Unnecessary bingo
+                            possible_choices.append([
+                                action_x,
+                                action_y,
+                                q_table[next_index][2],
+                                q_table[next_index][3]\
+                                    +bingo_point(before_bingo_x, next_bingo_x)\
+                                    +bingo_point(before_bingo_y, next_bingo_y)\
+                                    +B_N_PENALTY*new_bingo,
+                                q_table[next_index][4]+skull_point(next_table),
+                                recommandable,
+                            ])
+                    else:
+                        state_stack.append((next_table, step+1))
+                        need_to_fill = True
+            if not need_to_fill:
+                # All checked
+                best_choices = []
+                max_weak = 0
+                # over weak_limit is treated the same
+                current_weak_limit = max(0,WEAK_LIMIT-(step//3))
+                # if there's any recommandable, that is the primary selection
+                recommandable_choices = []
+                for pc in possible_choices:
+                    if pc[5]==1:
+                        recommandable_choices.append(pc)
+                if len(recommandable_choices)>0:
+                    possible_choices = recommandable_choices
+                for pc in possible_choices:
+                    if max_weak<pc[2] and max_weak<current_weak_limit:
+                        best_choices = []
+                        best_choices.append(pc)
+                        max_weak = min(pc[2],current_weak_limit)
+                    elif (max_weak==pc[2] or 
+                        (max_weak==current_weak_limit and pc[2]>=max_weak)):
+                        best_choices.append(pc)
+                min_bingo_p = best_choices[0][3]
+                best_choices_2 = []
+                for bc in best_choices:
+                    if min_bingo_p>bc[3]:
+                        best_choices_2=[]
+                        best_choices_2.append(bc)
+                        min_bingo_p = bc[3]
+                    elif min_bingo_p == bc[3]:
+                        best_choices_2.append(bc)
+                min_skull_p = best_choices_2[0][4]
+                best_choices_3 = []
+                for bc2 in best_choices_2:
+                    if min_skull_p>bc2[4]:
+                        best_choices_3=[]
+                        best_choices_3.append(bc2)
+                        min_skull_p = bc2[4]
+                    elif min_skull_p==bc2[4]:
+                        best_choices_3.append(bc2)
+
+                q_table[current_index] = np.array(best_choices_3[0],dtype=np.int16)
+                q_filled[current_index] = True
+                state_stack.pop()
+
+            if len(state_stack)>max_stack and use_tqdm:
+                max_stack = len(state_stack)
+                stack_tqdm.total = max_stack
+            if use_tqdm:
+                stack_tqdm.n = len(state_stack)
+                loop_n += 1
+                stack_tqdm.set_description(f'loop: {loop_n}')
+                stack_tqdm.update(n=0)
+        if use_tqdm:
+            stack_tqdm.close()
     np.savez_compressed(f'bingo_tables/nth/bingo_table_inanna_neverbingo_multi_{tid}.npz',
                         table=q_table, filled=q_filled)
 
@@ -304,10 +305,10 @@ if __name__ == '__main__':
             initial_tables.append(initial_table)
     q_Qs = [Queue() for _ in range(30)]
     all_processes = []
-    for i in range(6): #inanna
-        for j in range(5): #table div
+    for i in range(1,6): #inanna
+        for j in range(6): #table div
             p = Process(target=fill_table, args=(
-                    initial_tables[j*60:(j+1)*60],
+                    initial_tables[j*50:(j+1)*50],
                     i,
                     i*6+j,
                     i==0 and j==0,
