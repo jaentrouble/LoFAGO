@@ -179,8 +179,8 @@ def fill_table(initial_tables, nth_inanna, tid, use_tqdm=False):
                     assert next_bingo>=before_bingo, 'Bingo number decreased!'
                     
                     new_bingo = next_bingo - before_bingo
-                    if step<2:
-                        next_step_idx = step+4
+                    if nth_inanna*3-1<=step and step<(nth_inanna+1)*3-1:
+                        next_step_idx = step_idx+1
                     else:
                         next_step_idx = (step+1)%3
                     next_index_np = np.append(next_table.reshape(-1),next_step_idx)
