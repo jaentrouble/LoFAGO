@@ -273,7 +273,7 @@ def fill_table(initial_tables, nth_inanna, tid, use_tqdm=False):
 
                 final_choice = best_choices_3[0]
                 final_choice[2] = min(final_choice[2],current_weak_limit)
-                q_table[current_index] = np.array(best_choices_3[0],dtype=np.int16)
+                q_table[current_index] = np.array(final_choice,dtype=np.int16)
                 q_filled[current_index] = True
                 state_stack.pop()
 
