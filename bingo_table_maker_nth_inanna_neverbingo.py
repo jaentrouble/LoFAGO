@@ -214,6 +214,20 @@ def fill_table(initial_tables, nth_inanna, tid, use_tqdm=False):
                         elif (step%3==2) and new_bingo>0 and inanna_step:
                             # Never bingo when using inanna
                             pass
+                        elif (step%3==2) and new_bingo==0 and inanna_step:
+                            # Successful inanna
+                            # 'weakened' but no new bingo
+                            possible_choices.append([
+                                action_x,
+                                action_y,
+                                q_table[next_index][2]+1,
+                                q_table[next_index][3]\
+                                    +bingo_point(before_bingo_x, next_bingo_x)\
+                                    +bingo_point(before_bingo_y, next_bingo_y)\
+                                    +B_N_PENALTY*new_bingo,
+                                q_table[next_index][4]+skull_point(next_table),
+                                recommandable,
+                            ])
                         else:
                             # No need to weak kuku,
                             # Unnecessary bingo
@@ -271,9 +285,7 @@ def fill_table(initial_tables, nth_inanna, tid, use_tqdm=False):
                     elif min_skull_p==bc2[4]:
                         best_choices_3.append(bc2)
 
-                final_choice = best_choices_3[0]
-                final_choice[2] = min(final_choice[2],current_weak_limit)
-                q_table[current_index] = np.array(final_choice,dtype=np.int16)
+                q_table[current_index] = np.array(best_choices_3[0],dtype=np.int16)
                 q_filled[current_index] = True
                 state_stack.pop()
 
