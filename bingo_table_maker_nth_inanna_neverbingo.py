@@ -211,7 +211,7 @@ def fill_table(initial_tables, nth_inanna, tid, use_tqdm=False):
                                 q_table[next_index][4]+skull_point(next_table),
                                 recommandable,
                             ])
-                        elif (step%3==2) and inanna_step:
+                        elif (step%3==2) and new_bingo>0 and inanna_step:
                             # Never bingo when using inanna
                             pass
                         else:
