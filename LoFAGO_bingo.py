@@ -28,6 +28,8 @@ class Console():
         self.root.geometry('1300x700')
         self.root.resizable(False,False)
 
+        self.inanna_step = 1
+
         self.bingo_artist = BingoArtist()
         self.reset(update=False)
 
@@ -159,8 +161,8 @@ class Console():
 
         self.warning_variable.set('')
         self.weak_variable.set('')
-        if self.inanna and self.step<3:
-            step_idx = self.step+3
+        if self.inanna and self.is_inanna_step():
+            step_idx = self.step%3+3
         else:
             step_idx = self.step%3
         table_idx = np.append(self.bingo_board.reshape(-1).astype(int),
@@ -220,7 +222,7 @@ class Console():
         if not self.mode==MODE_INIT:
             text = f'{self.step+1}번째 폭탄'
             if self.step%3==2:
-                if self.inanna and self.step==2 :
+                if self.inanna and self.step==self.inanna_step*3+2 :
                     text += '(이번에 이난나 사용)'
                 else:
                     text += '(이번에 무력화)'
@@ -234,12 +236,11 @@ class Console():
         elif self.mode == MODE_BOMB:
             self.mode_variable.set(INFO_BOMB)
 
-        if self.inanna and self.step<2:
-            next_step_idx = self.step+4
+        if self.inanna and self.is_inanna_prev():
+            next_step_idx = (self.step+1)%3 +3
         else:
             next_step_idx = (self.step+1)%3
         diff_board = np.ones((5,5),dtype=int)*BIG_DIFF
-        print(need_to_weak)
         if rec_pos is not None:
             for x in range(5):
                 for y in range(5):
@@ -254,9 +255,7 @@ class Console():
                         if (count_bingo(tmp_next)-
                             count_bingo(self.bingo_board)<1):
                             diff_board[x,y]= BIG_DIFF
-                    print(diff_board)
             diff_board = diff_board[rec_x,rec_y] - diff_board
-            print(diff_board)
 
         self.bingo_img = ImageTk.PhotoImage(Image.fromarray(
             self.bingo_artist.draw_board(self.bingo_board,diff_board,rec_pos)))
@@ -287,6 +286,14 @@ class Console():
             self.click_history.pop()
             self.update()
 
+    def is_inanna_step(self):
+        return self.inanna_step*3<=self.step and self.step<(self.inanna_step+1)*3
+
+    def is_inanna_prev(self):
+        return (
+            self.inanna_step*3-1<=self.step and
+            self.step < (self.inanna_step+1)*3 -1
+        )
         
     def run(self):
         self.mode_variable.set(INFO_LOADING)

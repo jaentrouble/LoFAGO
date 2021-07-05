@@ -7,8 +7,8 @@ BINGOED = 2
 
 # RGB
 DIFF_COLOR = [
-    (0,255,0),
-    (255,255,0)
+    (0,200,0),
+    (200,200,0)
 ]
 
 SIZE = 640
@@ -89,14 +89,20 @@ class BingoArtist():
         for x in range(5):
             for y in range(5):
                 diff = diff_board[x,y]
-                if diff<2 and diff>=0:
+                if diff==0:
                     self.board_img = cv2.circle(
                         self.board_img,
                         self.board_idx_to_img_idx(x,y),
-                        RECOM_RAD,
-                        DIFF_COLOR[diff_board[x,y]],
+                        RECOM_RAD-4,
+                        DIFF_COLOR[0],
                         -1
                     )
+                # if diff==1:
+                #     self.board_img = cv2.fillPoly(
+                #         self.board_img,
+                #         [self.board_idx_to_triangle(x,y)],
+                #         DIFF_COLOR[1],
+                #     )
     
         if recommand is not None:
             rec_idx = self.board_idx_to_img_idx(*recommand)
@@ -108,9 +114,17 @@ class BingoArtist():
         else:
             return self.board_img.copy()
 
-    def board_idx_to_img_idx(self, x_indices, y_indices):
-        return (MIDDLE-SPACE*x_indices+SPACE*y_indices, 
-                SPACE+SPACE*x_indices+SPACE*y_indices)
+    def board_idx_to_img_idx(self, x_index, y_index):
+        return (MIDDLE-SPACE*x_index+SPACE*y_index, 
+                SPACE+SPACE*x_index+SPACE*y_index)
+
+    def board_idx_to_triangle(self, x_index, y_index):
+        center_x, center_y = self.board_idx_to_img_idx(x_index, y_index)
+        top = (center_x, center_y-RECOM_RAD)
+        left = (center_x-RECOM_RAD*(3**0.5)/2,center_y+RECOM_RAD/2)
+        right = (center_x+RECOM_RAD*(3**0.5)/2,center_y+RECOM_RAD/2)
+        return np.array([top,left,right],dtype=int)
+
         
 
 if __name__ == '__main__':
