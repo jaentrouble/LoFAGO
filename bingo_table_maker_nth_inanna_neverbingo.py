@@ -12,7 +12,7 @@ B_POINT = np.array([1,4,3,2,0,5])
 DIAG_IDX = 5
 B_N_PENALTY = 5
 KUKU = np.array([1,1])
-WEAK_LIMIT = 6
+WEAK_LIMIT = 7
 
 def skull_point(table):
     point = 0
@@ -211,7 +211,8 @@ def fill_table(initial_tables, nth_inanna, tid, use_tqdm=False):
                                 q_table[next_index][4]+skull_point(next_table),
                                 recommandable,
                             ])
-                        elif step==2 and new_bingo>0:
+                        elif (step%3==2) and inanna_step:
+                            # Never bingo when using inanna
                             pass
                         else:
                             # No need to weak kuku,

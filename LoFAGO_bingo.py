@@ -28,7 +28,7 @@ class Console():
         self.root.geometry('1300x700')
         self.root.resizable(False,False)
 
-        self.inanna_step = 1
+        self.inanna_step = 4
 
         self.bingo_artist = BingoArtist()
         self.reset(update=False)
@@ -113,13 +113,6 @@ class Console():
         )
         self.button_cancel.place(x=SIZE+200, y=100)
         
-        # self.label_future_1 = ttk.Label(self.root)
-        # self.label_future_1.place(x=SIZE+10, y=MIDDLE)
-        # self.label_future_2 = ttk.Label(self.root)
-        # self.label_future_2.place(x=SIZE+MIDDLE+10, y=MIDDLE)
-
-
-
     def reset(self, update=True):
         self.click_history = []
         if update:
@@ -161,12 +154,13 @@ class Console():
 
         self.warning_variable.set('')
         self.weak_variable.set('')
-        if self.inanna and self.is_inanna_step():
+        if self.is_inanna_step():
             step_idx = self.step%3+3
         else:
             step_idx = self.step%3
         table_idx = np.append(self.bingo_board.reshape(-1).astype(int),
                               step_idx)
+        table_idx = np.insert(table_idx,0,self.inanna_step)
         table_idx = tuple(table_idx)
         if self.table_filled[table_idx] and len(self.click_history)>=2:
             result = self.table[table_idx]
@@ -178,40 +172,6 @@ class Console():
             if max_w ==0:
                 self.warning_variable.set(WAR_IMP)
                 rec_pos = None
-                
-            # else:
-                # next_board = bomb_explode(self.bingo_board,rec_pos)
-                # if self.inanna and self.step<2:
-                #     next_step_idx = self.step+4
-                # else:
-                #     next_step_idx = (self.step+1)%3
-                # next_idx = np.append(next_board.reshape(-1).astype(int),
-                #                 next_step_idx)
-                # next_idx = tuple(next_idx)
-                # result = self.table[next_idx]
-                # next_x = result[0]
-                # next_y = result[1]
-                # next_w = result[2]
-                # next_pos = (int(next_x),int(next_y))
-                # self.future_img1 = ImageTk.PhotoImage(Image.fromarray(
-                #     self.bingo_artist.draw_board(next_board,next_pos,small=True)
-                # ))
-                # if next_w>0:
-                #     next_board = bomb_explode(next_board, next_pos)
-                #     if self.inanna and self.step==0:
-                #         next_step_idx = 5
-                #     else:
-                #         next_step_idx = (self.step+2)%3
-                #     next_idx = np.append(next_board.reshape(-1).astype(int),
-                #                 next_step_idx)
-                #     next_idx = tuple(next_idx)
-                #     result = self.table[next_idx]
-                #     next_x = result[0]
-                #     next_y = result[1]
-                #     next_pos = (int(next_x),int(next_y))
-                    # self.future_img2 = ImageTk.PhotoImage(Image.fromarray(
-                    #     self.bingo_artist.draw_board(next_board,next_pos,small=True)
-                    # ))
         else:
             rec_pos = None
             
@@ -222,7 +182,7 @@ class Console():
         if not self.mode==MODE_INIT:
             text = f'{self.step+1}번째 폭탄'
             if self.step%3==2:
-                if self.inanna and self.step==self.inanna_step*3+2 :
+                if self.is_inanna_step() :
                     text += '(이번에 이난나 사용)'
                 else:
                     text += '(이번에 무력화)'
@@ -236,7 +196,7 @@ class Console():
         elif self.mode == MODE_BOMB:
             self.mode_variable.set(INFO_BOMB)
 
-        if self.inanna and self.is_inanna_prev():
+        if self.is_inanna_prev():
             next_step_idx = (self.step+1)%3 +3
         else:
             next_step_idx = (self.step+1)%3
@@ -247,6 +207,7 @@ class Console():
                     tmp_next = bomb_explode(self.bingo_board, (x,y))
                     tmp_table_idx = np.append(tmp_next.reshape(-1).astype(int),
                                             next_step_idx)
+                    tmp_table_idx = np.insert(tmp_table_idx,0,self.inanna_step)
                     tmp_table_idx = tuple(tmp_table_idx)
                     tmp_result = self.table[tmp_table_idx]
                     tmp_w = tmp_result[2]
@@ -262,9 +223,6 @@ class Console():
         self.label_main_bingo.configure(
             image=self.bingo_img
         )
-        # self.label_future_1.configure(image=self.future_img1)
-        # self.label_future_2.configure(image=self.future_img2)
-
     def bingo_button_callback(self,x,y):
         self.click_history.append((x,y,self.mode))
         self.update()
@@ -287,12 +245,13 @@ class Console():
             self.update()
 
     def is_inanna_step(self):
-        return self.inanna_step*3<=self.step and self.step<(self.inanna_step+1)*3
+        return ((self.inanna_step-1)*3<=self.step and
+            self.step<self.inanna_step*3)
 
     def is_inanna_prev(self):
         return (
-            self.inanna_step*3-1<=self.step and
-            self.step < (self.inanna_step+1)*3 -1
+            (self.inanna_step-1)*3-1<=self.step and
+            self.step < self.inanna_step*3 -1
         )
         
     def run(self):
