@@ -12,7 +12,7 @@ B_POINT = np.array([1,4,3,2,0,5])
 DIAG_IDX = 5
 B_N_PENALTY = 5
 KUKU = np.array([1,1])
-WEAK_LIMIT = 7
+WEAK_LIMIT = 6
 
 def skull_point(table):
     point = 0
@@ -271,6 +271,8 @@ def fill_table(initial_tables, nth_inanna, tid, use_tqdm=False):
                     elif min_skull_p==bc2[4]:
                         best_choices_3.append(bc2)
 
+                final_choice = best_choices_3[0]
+                final_choice[2] = min(final_choice[2],current_weak_limit)
                 q_table[current_index] = np.array(best_choices_3[0],dtype=np.int16)
                 q_filled[current_index] = True
                 state_stack.pop()
