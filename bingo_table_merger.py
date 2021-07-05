@@ -29,7 +29,7 @@ for i in trange(5):
         else:
             loaded = np.load(str(BINGO_DIR/bingo_name(i*6+j)))
             merged_table = np.where(
-                np.logical_not(merged_filled)[...,np.newaxis],
+                merged_filled[...,np.newaxis],
                 merged_table,
                 loaded['table']
             )
