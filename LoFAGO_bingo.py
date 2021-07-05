@@ -164,6 +164,7 @@ class Console():
         table_idx = tuple(table_idx)
         if self.table_filled[table_idx] and len(self.click_history)>=2:
             result = self.table[table_idx]
+            print(result)
             rec_x = result[0]
             rec_y = result[1]
             max_w = result[2]
@@ -171,7 +172,6 @@ class Console():
             self.weak_variable.set(f'앞으로 {int(max_w)}빙고 가능\n(이난나 제외)')
             if max_w ==0:
                 self.warning_variable.set(WAR_IMP)
-                rec_pos = None
         else:
             rec_pos = None
             
