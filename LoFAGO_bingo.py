@@ -160,7 +160,7 @@ class Console():
             step_idx = self.step%3
         table_idx = np.append(self.bingo_board.reshape(-1).astype(int),
                               step_idx)
-        table_idx = np.insert(table_idx,0,self.inanna_step)
+        # table_idx = np.insert(table_idx,0,self.inanna_step)
         table_idx = tuple(table_idx)
         if self.table_filled[table_idx] and len(self.click_history)>=2:
             result = self.table[table_idx]
@@ -169,7 +169,7 @@ class Console():
             rec_y = result[1]
             max_w = result[2]
             rec_pos = (int(rec_x),int(rec_y))
-            self.weak_variable.set(f'앞으로 {int(max_w)}빙고 가능\n(이난나 제외)')
+            self.weak_variable.set(f'앞으로 {int(max_w)}무력 가능\n(이난나 포함)')
             if max_w ==0:
                 self.warning_variable.set(WAR_IMP)
         else:
@@ -207,7 +207,7 @@ class Console():
                     tmp_next = bomb_explode(self.bingo_board, (x,y))
                     tmp_table_idx = np.append(tmp_next.reshape(-1).astype(int),
                                             next_step_idx)
-                    tmp_table_idx = np.insert(tmp_table_idx,0,self.inanna_step)
+                    # tmp_table_idx = np.insert(tmp_table_idx,0,self.inanna_step)
                     tmp_table_idx = tuple(tmp_table_idx)
                     tmp_result = self.table[tmp_table_idx]
                     tmp_w = tmp_result[2]

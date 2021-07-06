@@ -163,7 +163,13 @@ def fill_table(initial_tables, nth_inanna, tid, use_tqdm=False):
             current_index = tuple(current_index)
             before_bingo = count_bingo(current_table)
             before_bingo_x, before_bingo_y = check_bingo(current_table)
-                    
+            
+            # Ignore all steps after weak limit
+            # bingos after weak limit disturbs the bingo points
+            if step>=WEAK_LIMIT*3:
+                q_filled[current_index] = True
+                state_stack.pop()
+                continue
                     
             possible_choices = []
             need_to_fill = False
