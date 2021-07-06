@@ -245,6 +245,9 @@ def fill_table(initial_tables, nth_inanna, tid, use_tqdm=False):
                                             *(5*action_x+action_y))
                                         -1 #self 1
                                     )
+                            if use_tqdm:
+                                print('\n')
+                                print(loop_id,'---',next_loop)
                         else:
                             next_loop = loop_id
                             if use_tqdm:
