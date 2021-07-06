@@ -143,9 +143,9 @@ def fill_table(initial_tables, nth_inanna, tid, use_tqdm=False):
     state_stack = []
     for i,initial_table in enumerate(initial_tables):
         print(f'proc {tid} starting {i+1}/{len(initial_tables)}')
-        state_stack.append((initial_table,0,25**(3*WEAK_LIMIT+1)//24))
+        state_stack.append((initial_table,0,(25**(3*WEAK_LIMIT+1)-1)//24))
         if use_tqdm:
-            prog_tqdm = tqdm.tqdm(total=25**(3*WEAK_LIMIT+1)//24, ncols=130)
+            prog_tqdm = tqdm.tqdm(total=(25**(3*WEAK_LIMIT+1)-1)//24, ncols=130)
         
         loop_id = 0
         while len(state_stack)>0:
@@ -241,7 +241,7 @@ def fill_table(initial_tables, nth_inanna, tid, use_tqdm=False):
                     else:
                         if step<3*WEAK_LIMIT:
                             next_loop = (loop_id 
-                                        -(int(25**(3*WEAK_LIMIT-1-step))
+                                        -((25**(3*WEAK_LIMIT-step)-1)//24
                                             *int(5*action_x+action_y))
                                         -1 #self 1
                                     )
