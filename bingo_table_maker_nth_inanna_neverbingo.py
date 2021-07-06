@@ -147,8 +147,9 @@ def fill_table(initial_tables, nth_inanna, tid, use_tqdm=False):
         if use_tqdm:
             prog_tqdm = tqdm.tqdm(total=25**(3*WEAK_LIMIT+1)/24, ncols=130)
         
-        
+        loop_id = 0
         while len(state_stack)>0:
+            last_loop = loop_id
             current_table, step, loop_id = state_stack[-1]
             inanna_step = False
             if nth_inanna*3<=step and step<(nth_inanna+1)*3:
@@ -293,8 +294,7 @@ def fill_table(initial_tables, nth_inanna, tid, use_tqdm=False):
 
                 if use_tqdm:
                     prog_tqdm.n = loop_id
-                    print(loop_id)
-                    prog_tqdm.set_postfix(stack=len(state_stack))
+                    prog_tqdm.set_postfix(stack=len(state_stack),loopsame=last_loop==loop_id)
         if use_tqdm:
             prog_tqdm.close()
     np.savez_compressed(f'bingo_tables/nth/bingo_table_inanna_neverbingo_multi_{tid}.npz',
