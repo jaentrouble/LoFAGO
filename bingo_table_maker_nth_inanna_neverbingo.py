@@ -297,7 +297,7 @@ def fill_table(initial_tables, nth_inanna, tid, use_tqdm=False):
                 q_table[current_index] = np.array(best_choices_3[0],dtype=np.int16)
                 q_filled[current_index] = True
                 if use_tqdm:
-                    print(loop_id)
+                    print(type(loop_id))
                     prog_tqdm.n = loop_id
                     prog_tqdm.set_postfix(stack=len(state_stack),loopsame=last_loop==loop_id)
                 state_stack.pop()
