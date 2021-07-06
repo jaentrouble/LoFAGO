@@ -151,6 +151,7 @@ def fill_table(initial_tables, nth_inanna, tid, use_tqdm=False):
         while len(state_stack)>0:
             last_loop = loop_id
             current_table, step, loop_id = state_stack[-1]
+            assert loop_id != last_loop
             inanna_step = False
             if nth_inanna*3<=step and step<(nth_inanna+1)*3:
                 # Inanna steps
