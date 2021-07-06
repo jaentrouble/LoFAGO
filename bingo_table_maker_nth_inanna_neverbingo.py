@@ -12,7 +12,7 @@ B_POINT = np.array([1,4,3,2,0,5])
 DIAG_IDX = 5
 B_N_PENALTY = 6
 KUKU = np.array([1,1])
-WEAK_LIMIT = 8
+WEAK_LIMIT = 7
 
 def skull_point(table):
     point = 0
@@ -245,13 +245,8 @@ def fill_table(initial_tables, nth_inanna, tid, use_tqdm=False):
                                             *int(5*action_x+action_y))
                                         -1 #self 1
                                     )
-                            if use_tqdm:
-                                print('\n--------')
-                                print(type(next_loop))
                         else:
                             next_loop = loop_id
-                            if use_tqdm:
-                                print('skipped')
                         state_stack.append((next_table, step+1,next_loop))
                         need_to_fill = True
             if not need_to_fill:
@@ -297,7 +292,6 @@ def fill_table(initial_tables, nth_inanna, tid, use_tqdm=False):
                 q_table[current_index] = np.array(best_choices_3[0],dtype=np.int16)
                 q_filled[current_index] = True
                 if use_tqdm:
-                    print(type(loop_id))
                     prog_tqdm.n = loop_id
                     prog_tqdm.set_postfix(stack=len(state_stack),loopsame=last_loop==loop_id)
                 state_stack.pop()
