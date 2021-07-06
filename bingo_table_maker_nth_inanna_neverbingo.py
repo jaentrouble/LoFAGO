@@ -293,6 +293,7 @@ def fill_table(initial_tables, nth_inanna, tid, use_tqdm=False):
 
                 if use_tqdm:
                     prog_tqdm.n = loop_id
+                    prog_tqdm.update(0)
                     prog_tqdm.set_postfix(stack=len(state_stack),last=loop_id%10000)
         if use_tqdm:
             prog_tqdm.close()
