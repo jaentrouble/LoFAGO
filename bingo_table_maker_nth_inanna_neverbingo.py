@@ -293,8 +293,8 @@ def fill_table(initial_tables, nth_inanna, tid, use_tqdm=False):
 
                 if use_tqdm:
                     prog_tqdm.n = loop_id
-                    prog_tqdm.update(0)
-                    prog_tqdm.set_postfix(stack=len(state_stack),last=loop_id%(10**10))
+                    print(loop_id)
+                    prog_tqdm.set_postfix(stack=len(state_stack))
         if use_tqdm:
             prog_tqdm.close()
     np.savez_compressed(f'bingo_tables/nth/bingo_table_inanna_neverbingo_multi_{tid}.npz',
