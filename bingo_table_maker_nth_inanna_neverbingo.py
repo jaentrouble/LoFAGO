@@ -242,7 +242,7 @@ def fill_table(initial_tables, nth_inanna, tid, use_tqdm=False):
                         if step<3*WEAK_LIMIT:
                             next_loop = (loop_id 
                                         -(int(25**(3*WEAK_LIMIT-1-step))
-                                            *(5*action_x+action_y))
+                                            *int(5*action_x+action_y))
                                         -1 #self 1
                                     )
                             if use_tqdm:
