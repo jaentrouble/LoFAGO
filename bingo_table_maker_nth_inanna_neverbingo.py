@@ -10,7 +10,7 @@ MAX_STEPS = 18
 EMPTY_BOARD = np.zeros((5,5), dtype=np.bool)
 B_POINT = np.array([1,4,3,2,0,5])
 DIAG_IDX = 5
-B_N_PENALTY = 5
+B_N_PENALTY = 6
 KUKU = np.array([1,1])
 WEAK_LIMIT = 7
 
@@ -161,14 +161,7 @@ def fill_table(initial_tables, nth_inanna, tid, use_tqdm=False):
             current_index = tuple(current_index)
             before_bingo = count_bingo(current_table)
             before_bingo_x, before_bingo_y = check_bingo(current_table)
-            
-            # Ignore all steps after weak limit
-            # bingos after weak limit disturbs the bingo points
-            if step>=WEAK_LIMIT*3:
-                q_filled[current_index] = True
-                state_stack.pop()
-                continue
-                    
+                                
             possible_choices = []
             need_to_fill = False
             for action_x in range(5):
@@ -208,8 +201,7 @@ def fill_table(initial_tables, nth_inanna, tid, use_tqdm=False):
                                 action_x,
                                 action_y,
                                 q_table[next_index][2]+1,
-                                q_table[next_index][3]\
-                                    +bingo_point(before_bingo_x, next_bingo_x)\
+                                bingo_point(before_bingo_x, next_bingo_x)\
                                     +bingo_point(before_bingo_y, next_bingo_y)\
                                     +B_N_PENALTY*(new_bingo-1),
                                 q_table[next_index][4]+skull_point(next_table),
@@ -220,13 +212,12 @@ def fill_table(initial_tables, nth_inanna, tid, use_tqdm=False):
                             pass
                         elif (step%3==2) and new_bingo==0 and inanna_step:
                             # Successful inanna
-                            # 'weakened' but no new bingo
+                            # 'weakened' without bingo
                             possible_choices.append([
                                 action_x,
                                 action_y,
                                 q_table[next_index][2]+1,
-                                q_table[next_index][3]\
-                                    +bingo_point(before_bingo_x, next_bingo_x)\
+                                bingo_point(before_bingo_x, next_bingo_x)\
                                     +bingo_point(before_bingo_y, next_bingo_y)\
                                     +B_N_PENALTY*new_bingo,
                                 q_table[next_index][4]+skull_point(next_table),
@@ -239,19 +230,21 @@ def fill_table(initial_tables, nth_inanna, tid, use_tqdm=False):
                                 action_x,
                                 action_y,
                                 q_table[next_index][2],
-                                q_table[next_index][3]\
-                                    +bingo_point(before_bingo_x, next_bingo_x)\
+                                bingo_point(before_bingo_x, next_bingo_x)\
                                     +bingo_point(before_bingo_y, next_bingo_y)\
                                     +B_N_PENALTY*new_bingo,
                                 q_table[next_index][4]+skull_point(next_table),
                                 recommandable,
                             ])
                     else:
-                        next_loop = (loop_id 
-                                    -((25**(3*WEAK_LIMIT-1-step))
-                                        *(5*action_x+action_y))
-                                    -1 #self 1
-                                )
+                        if step<3*WEAK_LIMIT:
+                            next_loop = (loop_id 
+                                        -((25**(3*WEAK_LIMIT-1-step))
+                                            *(5*action_x+action_y))
+                                        -1 #self 1
+                                    )
+                        else:
+                            next_loop = loop_id
                         state_stack.append((next_table, step+1,next_loop))
                         need_to_fill = True
             if not need_to_fill:
