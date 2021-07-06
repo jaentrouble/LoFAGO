@@ -196,7 +196,8 @@ def fill_table(initial_tables, nth_inanna, tid, use_tqdm=False):
                         ])
                     elif q_filled[next_index]:
                         if (step%3==2) and new_bingo>0 and not inanna_step:
-                            # 무력 성공
+                            # successful bingo
+                            # reset bingo point
                             possible_choices.append([
                                 action_x,
                                 action_y,
@@ -217,7 +218,8 @@ def fill_table(initial_tables, nth_inanna, tid, use_tqdm=False):
                                 action_x,
                                 action_y,
                                 q_table[next_index][2]+1,
-                                bingo_point(before_bingo_x, next_bingo_x)\
+                                q_table[next_index][3]\
+                                    +bingo_point(before_bingo_x, next_bingo_x)\
                                     +bingo_point(before_bingo_y, next_bingo_y)\
                                     +B_N_PENALTY*new_bingo,
                                 q_table[next_index][4]+skull_point(next_table),
@@ -230,7 +232,8 @@ def fill_table(initial_tables, nth_inanna, tid, use_tqdm=False):
                                 action_x,
                                 action_y,
                                 q_table[next_index][2],
-                                bingo_point(before_bingo_x, next_bingo_x)\
+                                q_table[next_index][3]\
+                                    +bingo_point(before_bingo_x, next_bingo_x)\
                                     +bingo_point(before_bingo_y, next_bingo_y)\
                                     +B_N_PENALTY*new_bingo,
                                 q_table[next_index][4]+skull_point(next_table),
