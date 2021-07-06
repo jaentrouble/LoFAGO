@@ -151,7 +151,6 @@ def fill_table(initial_tables, nth_inanna, tid, use_tqdm=False):
         while len(state_stack)>0:
             last_loop = loop_id
             current_table, step, loop_id = state_stack[-1]
-            assert loop_id != last_loop
             inanna_step = False
             if nth_inanna*3<=step and step<(nth_inanna+1)*3:
                 # Inanna steps
@@ -291,11 +290,12 @@ def fill_table(initial_tables, nth_inanna, tid, use_tqdm=False):
 
                 q_table[current_index] = np.array(best_choices_3[0],dtype=np.int16)
                 q_filled[current_index] = True
-                state_stack.pop()
-
                 if use_tqdm:
                     prog_tqdm.n = loop_id
                     prog_tqdm.set_postfix(stack=len(state_stack),loopsame=last_loop==loop_id)
+                state_stack.pop()
+
+
         if use_tqdm:
             prog_tqdm.close()
     np.savez_compressed(f'bingo_tables/nth/bingo_table_inanna_neverbingo_multi_{tid}.npz',
