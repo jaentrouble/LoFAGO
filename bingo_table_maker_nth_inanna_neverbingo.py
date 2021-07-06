@@ -12,7 +12,7 @@ B_POINT = np.array([1,4,3,2,0,5])
 DIAG_IDX = 5
 B_N_PENALTY = 6
 KUKU = np.array([1,1])
-WEAK_LIMIT = 7
+WEAK_LIMIT = 8
 
 def skull_point(table):
     point = 0
