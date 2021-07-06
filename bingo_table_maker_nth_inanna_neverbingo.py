@@ -145,7 +145,7 @@ def fill_table(initial_tables, nth_inanna, tid, use_tqdm=False):
         print(f'proc {tid} starting {i+1}/{len(initial_tables)}')
         state_stack.append((initial_table,0,25**(3*WEAK_LIMIT+1)/24))
         if use_tqdm:
-            prog_tqdm = tqdm.tqdm(total=25**(3*WEAK_LIMIT), ncols=130)
+            prog_tqdm = tqdm.tqdm(total=25**(3*WEAK_LIMIT+1)/24, ncols=130)
         
         
         while len(state_stack)>0:
