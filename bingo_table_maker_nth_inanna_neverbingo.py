@@ -138,7 +138,7 @@ def bomb_explode(table, bomb_pos):
 def fill_table(initial_tables, nth_inanna, tid, use_tqdm=False):
     q_table = np.zeros([2]*25+[6,6], dtype=np.int16)
     q_filled = np.zeros([2]*25+[6], dtype=np.bool)
-    import tqdm
+    import tqdm, time
 
     state_stack = []
     for i,initial_table in enumerate(initial_tables):
@@ -149,8 +149,10 @@ def fill_table(initial_tables, nth_inanna, tid, use_tqdm=False):
         
         loop_id = 0
         while len(state_stack)>0:
+            time.sleep(1)
             last_loop = loop_id
             current_table, step, loop_id = state_stack[-1]
+            print(state_stack[-1])
             inanna_step = False
             if nth_inanna*3<=step and step<(nth_inanna+1)*3:
                 # Inanna steps
