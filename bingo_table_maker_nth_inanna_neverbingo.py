@@ -143,15 +143,13 @@ def fill_table(initial_tables, nth_inanna, tid, use_tqdm=False):
     state_stack = []
     for i,initial_table in enumerate(initial_tables):
         print(f'proc {tid} starting {i+1}/{len(initial_tables)}')
-        state_stack.append((initial_table,0))
+        state_stack.append((initial_table,0,0))
         if use_tqdm:
-            stack_tqdm = tqdm.tqdm(total=1, ncols=130)
-        max_stack = 1
-        loop_n = 0
+            prog_tqdm = tqdm.tqdm(total=25**(3*WEAK_LIMIT), ncols=130)
         
         
         while len(state_stack)>0:
-            current_table, step = state_stack[-1]
+            current_table, step, loop_id = state_stack[-1]
             inanna_step = False
             if nth_inanna*3<=step and step<(nth_inanna+1)*3:
                 # Inanna steps
@@ -249,7 +247,12 @@ def fill_table(initial_tables, nth_inanna, tid, use_tqdm=False):
                                 recommandable,
                             ])
                     else:
-                        state_stack.append((next_table, step+1))
+                        next_loop = (loop_id 
+                                    +((25**(3*WEAK_LIMIT-1-step))
+                                        *(25-(5*action_x+action_y)) #self 1 included
+                                    )
+                                )
+                        state_stack.append((next_table, step+1,next_loop))
                         need_to_fill = True
             if not need_to_fill:
                 # All checked
@@ -295,16 +298,10 @@ def fill_table(initial_tables, nth_inanna, tid, use_tqdm=False):
                 q_filled[current_index] = True
                 state_stack.pop()
 
-            if len(state_stack)>max_stack and use_tqdm:
-                max_stack = len(state_stack)
-                stack_tqdm.total = max_stack
-            if use_tqdm:
-                stack_tqdm.n = len(state_stack)
-                loop_n += 1
-                stack_tqdm.set_description(f'loop: {loop_n}')
-                stack_tqdm.update(n=0)
+                if use_tqdm:
+                    prog_tqdm.n = loop_id
         if use_tqdm:
-            stack_tqdm.close()
+            prog_tqdm.close()
     np.savez_compressed(f'bingo_tables/nth/bingo_table_inanna_neverbingo_multi_{tid}.npz',
                         table=q_table, filled=q_filled)
 
