@@ -300,6 +300,7 @@ def fill_table(initial_tables, nth_inanna, tid, use_tqdm=False):
 
                 if use_tqdm:
                     prog_tqdm.n = loop_id
+                    prog_tqdm.update(n=0)
         if use_tqdm:
             prog_tqdm.close()
     np.savez_compressed(f'bingo_tables/nth/bingo_table_inanna_neverbingo_multi_{tid}.npz',
