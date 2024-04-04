@@ -1,4 +1,4 @@
-# LoFAGO (Lostark F***ing Awesome Gangseon Oppa)
+# LoFAGO 
 LostArk Helper programs
 
 ## 로스트아크 어빌리티 스톤 세공 최적화 시뮬레이션
